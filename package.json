@@ -1,0 +1,19 @@
+{
+  "name": "esy-cygwin",
+  "version": "0.1.0",
+  "description": "Installation utilities for Cygwin - primed for Reason/OCaml",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryphe/esy-cygwin.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bryphe/esy-cygwin/issues"
+  },
+  "homepage": "https://github.com/bryphe/esy-cygwin#readme"
+}
