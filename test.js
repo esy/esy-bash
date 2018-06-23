@@ -8,7 +8,6 @@ const normalizeEndlines = (str) => str.split("\r\n").join("\n")
 const normalizePath = (str) => str.split("\\").join("/")
 
 const cygwinRun = async (script) => {
-
     console.log(`cygwinRun: ${script}`)
 
     const normalizedScript = normalizeEndlines(script)
@@ -51,8 +50,7 @@ it("ocamlc.opt.exe -config gives valid output", async () => {
 
 })
 
-it("jbuilder installs", () => {
-
+it("jbuilder installs", async () => {
     const script = `opam install jbuilder`
     const output = await cygwinRun(script)
 
