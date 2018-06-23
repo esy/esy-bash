@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/bryphe/esy-cygwin/issues"
   },
-  "homepage": "https://github.com/bryphe/esy-cygwin#readme"
+  "homepage": "https://github.com/bryphe/esy-cygwin#readme",
+  "dependencies": {
+    "download": "^7.0.0",
+    "mkdirp": "^0.5.1"
+  }
 }
