@@ -53,9 +53,26 @@ const install = async () => {
         localPackageDirectory,
         "-P",
         packagesToInstall.join(",") 
-    ])
+    ], {
+        stdio: [process.stdin, process.stdout, process.stderr],
+        encoding: "utf-8",
+    })
 
     log(`Installation complete!`)
+
+    log(`Setting up OPAM...`)
+    const bashExecutablePath = path.join(destinationFolder, "bin", "bash.exe")
+    const opamScriptPath = path.resolve(path.join(__dirname, "install-opam.sh"))
+
+    cp.spawnSync(bashExecutablePath, [
+        "-l",
+        opamScriptPath,
+    ], {
+        stdio: [process.stdin, process.stdout, process.stderr],
+        encoding: "utf-8",
+    })
+
+    log(`OPAM setup complete`)
 }
 
 if (os.platform() === "win32") {
