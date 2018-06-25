@@ -3,7 +3,7 @@
 # Helper script to setup the OPAM repository & OCaml/Reason build tools
 # Based on: https://github.com/ocaml/ocaml-ci-scripts/blob/master/appveyor-opam.sh
 
-SWITCH=${OPAM_SWITCH:-'4.03.0+mingw64c'}
+SWITCH=${OPAM_SWITCH:-'4.06.1+mingw64c'}
 OPAM_URL='https://github.com/fdopen/opam-repository-mingw/releases/download/0.0.0.1/opam64.tar.xz'
 OPAM_ARCH=opam64
 
