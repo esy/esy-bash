@@ -68,8 +68,12 @@ const install = async () => {
         "-l",
         opamScriptPath,
     ], {
-        stdio: [process.stdin, process.stdout, process.stderr],
+        stdio: "inherit",
         encoding: "utf-8",
+        env: {
+            ...process.env,
+            "HOME": "/home/esyuser"
+        }
     })
 
     log(`OPAM setup complete`)

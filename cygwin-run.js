@@ -4,7 +4,6 @@ const os = require("os")
 const path = require("path")
 
 const bashPath = path.join(__dirname, ".cygwin", "bin", "bash.exe")
-const bashArguments = "-lc"
 
 const normalizeEndlines = (str) => str.split("\r\n").join("\n")
 
@@ -14,6 +13,8 @@ const runCygwin = (bashCommand) => {
 
     // Create a temporary shell script to run the command,
     // since the process doesn't respect `cwd`.
+
+    const bashArguments = bashCommand ? "-lc" : "-l"
 
     const bashCommandWithDirectoryPreamble = `
         cd ${normalizePath(process.cwd())}
@@ -30,6 +31,10 @@ const runCygwin = (bashCommand) => {
     const proc = cp.spawn(bashPath, [bashArguments, normalizePath(temporaryScriptFilePath)], {
         stdio: "inherit",
         cwd: process.cwd(),
+        env: {
+            ...process.env,
+            "HOME": "/home/esyuser",
+        }
     })
 }
 
