@@ -3,6 +3,12 @@
   "version": "0.1.0",
   "description": "Installation utilities for Cygwin - primed for Reason/OCaml",
   "main": "index.js",
+  "bin": {
+    "cygwin-bash": "bin/cygwin-bash.js"
+  },
+  "engines": {
+    "node": ">=8.0"
+  },
   "scripts": {
     "test": "jest",
     "postinstall": "node postinstall.js"
