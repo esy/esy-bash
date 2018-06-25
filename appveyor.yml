@@ -5,7 +5,22 @@ platform:
 install:
     - npm install
 
+environment:
+  my_variable:
+    secure: pNdFuPuA8RB67Dxjn4u/Om+NoCy851jnz+YDTflZgej0LIT/+HC0r545wgS5msIr
+
 build_script:
     - npm test
 
-build: off
+test: off
+
+deploy_script:
+  - ps: |
+      if ($ENV:CONFIGURATION -eq "publish")
+      {
+        "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
+        iex "npm pack"
+        iex "npm publish"
+      }
+    on:
+      branch: master
