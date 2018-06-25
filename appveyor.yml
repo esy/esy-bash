@@ -6,7 +6,7 @@ install:
     - npm install
 
 environment:
-  ENV_TOKEN:
+  NPM_TOKEN:
     secure: pNdFuPuA8RB67Dxjn4u/Om+NoCy851jnz+YDTflZgej0LIT/+HC0r545wgS5msIr
 
 build_script:
