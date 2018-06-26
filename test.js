@@ -19,7 +19,11 @@ const cygwinRun = async (script) => {
 
     const bashPath = path.join(__dirname, ".cygwin", "bin", "bash.exe")
 
-    const output = cp.spawnSync(bashPath, ["-lc", normalizePath(testFilePath)])
+    const output = cp.spawnSync(bashPath, ["-lc", normalizePath(testFilePath)], {
+        env: {
+            "HOME": "/home/esyuser",
+        }
+    })
     console.log(` - command returned with status: ${output.status}`)
 
     return {
@@ -53,6 +57,8 @@ it("ocamlc.opt.exe -config gives valid output", async () => {
 it("jbuilder installs", async () => {
     const script = `opam install jbuilder`
     const output = await cygwinRun(script)
+    console.log(output.stderr)
+    console.log(output.stdout)
 
     expect(output.status).toBe(0)
 
