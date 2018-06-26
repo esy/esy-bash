@@ -28,7 +28,7 @@ const runCygwin = (bashCommand) => {
 
     fs.writeFileSync(temporaryScriptFilePath, bashCommandWithDirectoryPreamble, "utf8")
 
-    const output = cp.spawnSync(bashPath, [bashArguments, normalizePath(temporaryScriptFilePath)], {
+    cp.spawn(bashPath, [bashArguments, normalizePath(temporaryScriptFilePath)], {
         stdio: "inherit",
         cwd: process.cwd(),
         env: {
@@ -36,12 +36,6 @@ const runCygwin = (bashCommand) => {
             "HOME": "/home/esyuser",
         }
     })
-
-    return {
-        status: output.status,
-        stdout: output.stdout.toString("utf8"),
-        stderr: output.stderr.toString("utf8"),
-    }
 }
 
 module.exports = {
