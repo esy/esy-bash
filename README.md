@@ -1,11 +1,12 @@
-# esy-cygwin
-[![Build Status](https://travis-ci.org/bryphe/esy-cygwin.svg?branch=master)](https://travis-ci.org/bryphe/esy-cygwin) [![Build Status](https://ci.appveyor.com/api/projects/status/gum9hty9hm65o7ae/branch/master?svg=true)](https://ci.appveyor.com/project/bryphe/esy-cygwin/branch/master)
+# esy-bash
+[![Build Status](https://travis-ci.org/bryphe/esy-bash.svg?branch=master)](https://travis-ci.org/bryphe/esy-bash) [![Build Status](https://ci.appveyor.com/api/projects/status/gum9hty9hm65o7ae/branch/master?svg=true)](https://ci.appveyor.com/project/bryphe/esy-bash/branch/master)
 
-Installation utilities for Cygwin - primed for Reason/OCaml
+Installation utilities for a bash environment - primed for Reason/OCaml
 
-This package provides a ready-to-use Cygwin environment, with OCaml installed and set up with the OPAM repository for Windows.
+This package is intended to smooth over cases where OCaml packages rely on Unix utilities or a Bash environment.
 
-On Linux and OS X, this package is not necessary.
+On Linux and OS X, this package is essentially a no-op. On Windows, we install an isolated `cygwin` environment, ready to use for OCaml/OPAM, that we use to run a bash shell.
+
 
 ## Installation
 
@@ -13,20 +14,29 @@ On Linux and OS X, this package is not necessary.
  npm install
 ```
 
-Installation does the following:
+Installation on Windows does the following:
 - Downloads `cygwin` into a `.cygwin` folder
 - Installs various utilities required on `cygwin` for OCaml & Reason - `rsync`, `patch`, `mingw`, etc.
 - Sets up OPAM to point to the Windows repository: https://github.com/fdopen/opam-repository-mingw/
 
 ## Usage
 
-### Bash
+### Command Line
 
-Cygwin bundles a `bash` shell, which can be found at `.cygwin/bin/bash.exe` - you can use this to run commands, like:
+The __`esy-bash`__ command runs a script in a bash shell. On Linux and OS X, this just uses the default `bash` shell. On Windows, this delegates to the installed `cygwin` environment:
 
-```bash
-> .\cygwin\bin\bash.exe -lc "ocaml --version"
-The OCaml toplevel, version 4.03.0
+```
+esy-bash echo 'HI'
+```
+
+### API
+
+An API is also bundled:
+
+```
+const { bashExec } = require("esy-bash")
+
+await bashExec("ls -a")
 ```
 
 ## License
