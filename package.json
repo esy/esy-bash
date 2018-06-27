@@ -4,7 +4,7 @@
   "description": "Installation utilities for Cygwin - primed for Reason/OCaml",
   "main": "index.js",
   "bin": {
-    "cygwin-bash": "bin/cygwin-bash.js"
+    "esy-bash": "bin/cygwin-bash.js"
   },
   "engines": {
     "node": ">=8.0"
