@@ -11,6 +11,10 @@ matrix:
           node_js: 8
 install:
     - npm install
+
+build:
+    - npm test
+
 script:
     - npm --version
 
