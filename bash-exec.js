@@ -34,7 +34,7 @@ const bashExec = (bashCommand) => {
         proc = nativeBashExec(normalizedPath)
     }
 
-    return new Promise.resolve((res, rej) => {
+    return new Promise((res, rej) => {
         proc.on("close", (code) => {
             console.log("esy-bash: process exited with code " + code)
             res(code)
@@ -42,22 +42,22 @@ const bashExec = (bashCommand) => {
     })
 }
 
-const nativeBashExec = (bashCommandFile) => {
-    return cp.spawn("bash", ["-c", bashCommandFile], {
+const nativeBashExec = (bashCommandFilePath) => {
+    return cp.spawn("bash", ["-c", bashCommandFilePath], {
         stdio: "inherit",
         cwd: process.cwd(),
     })
 }
 
 
-const cygwinExec = (bashCommandFile) => {
+const cygwinExec = (bashCommandFilePath) => {
 
     // Create a temporary shell script to run the command,
     // since the process doesn't respect `cwd`.
 
-    const bashArguments = bashCommand ? "-lc" : "-l"
+    const bashArguments = bashCommandFilePath ? "-lc" : "-l"
 
-    return cp.spawn(bashPath, [bashArguments, normalizePath(temporaryScriptFilePath)], {
+    return cp.spawn(bashPath, [bashArguments, bashCommandFilePath], {
         stdio: "inherit",
         cwd: process.cwd(),
         env: {
