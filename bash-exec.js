@@ -11,8 +11,12 @@ const normalizePath = (str) => {
     return str.split("\\").join("/")
 }
 
-const bashExec = (bashCommand) => {
-    console.log("esy-bash: executing bash command: " + bashCommand)
+let nonce = 0
+
+const bashExec = (bashCommand, options) => {
+    options = options || {}
+    nonce++
+    console.log("esy-bash: executing bash command: " + bashCommand + `nonce: ${nonce}`)
 
     const bashCommandWithDirectoryPreamble = `
         cd ${normalizePath(process.cwd())}
@@ -21,7 +25,7 @@ const bashExec = (bashCommand) => {
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
 
     const tmp = os.tmpdir()
-    const temporaryScriptFilePath = path.join(tmp, "__test__.sh")
+    const temporaryScriptFilePath = path.join(tmp, `__esy-bash__${new Date().getTime()}__${nonce}__.sh`)
 
     fs.writeFileSync(temporaryScriptFilePath, bashCommandWithDirectoryPreamble, "utf8")
     let normalizedPath = normalizePath(temporaryScriptFilePath)
@@ -29,9 +33,9 @@ const bashExec = (bashCommand) => {
     let proc = null
 
     if (os.platform() === "win32") {
-        proc = cygwinExec(normalizedPath)
+        proc = cygwinExec(normalizedPath, options)
     } else {
-        proc = nativeBashExec(normalizedPath)
+        proc = nativeBashExec(normalizedPath, options)
     }
 
     return new Promise((res, rej) => {
@@ -42,15 +46,16 @@ const bashExec = (bashCommand) => {
     })
 }
 
-const nativeBashExec = (bashCommandFilePath) => {
+const nativeBashExec = (bashCommandFilePath, options) => {
     return cp.spawn("bash", ["-c", bashCommandFilePath], {
         stdio: "inherit",
         cwd: process.cwd(),
+        ...options,
     })
 }
 
 
-const cygwinExec = (bashCommandFilePath) => {
+const cygwinExec = (bashCommandFilePath, options) => {
 
     // Create a temporary shell script to run the command,
     // since the process doesn't respect `cwd`.
@@ -63,7 +68,8 @@ const cygwinExec = (bashCommandFilePath) => {
         env: {
             ...process.env,
             "HOME": "/home/esyuser",
-        }
+        },
+        ...options,
     })
 }
 
