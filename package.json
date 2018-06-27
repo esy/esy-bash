@@ -1,7 +1,7 @@
 {
   "name": "esy-cygwin",
   "version": "0.1.5",
-  "description": "Installation utilities for Cygwin - primed for Reason/OCaml",
+  "description": "Cross-platform bash utilities - primed for Reason/OCaml",
   "main": "index.js",
   "bin": {
     "esy-bash": "bin/cygwin-bash.js"
