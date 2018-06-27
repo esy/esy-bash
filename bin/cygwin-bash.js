@@ -2,7 +2,7 @@
 
 "use strict"
 
-const { runCygwin } = require("./../cygwin-run")
+const { bashExec } = require("./index")
 const args = process.argv.slice(2).join(" ")
-runCygwin(args)
+bashExec(args)
 

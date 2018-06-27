@@ -17,7 +17,7 @@ const cygwinRun = async (script) => {
 
     fs.writeFileSync(testFilePath, normalizedScript, "utf8")
 
-    const bashPath = path.join(__dirname, ".cygwin", "bin", "bash.exe")
+    const bashPath = path.join(__dirname, "..", ".cygwin", "bin", "bash.exe")
 
     const output = cp.spawnSync(bashPath, ["-lc", normalizePath(testFilePath)], {
         env: {
