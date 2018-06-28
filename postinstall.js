@@ -71,8 +71,7 @@ const install = async () => {
         stdio: "inherit",
         encoding: "utf-8",
         env: {
-            ...process.env,
-            "HOME": "/home/esyuser"
+            ...process.env
         }
     })
 

@@ -67,7 +67,6 @@ const cygwinExec = (bashCommandFilePath, options) => {
         cwd: process.cwd(),
         env: {
             ...process.env,
-            "HOME": "/home/esyuser",
         },
         ...options,
     })

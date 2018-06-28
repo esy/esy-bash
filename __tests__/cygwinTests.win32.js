@@ -19,11 +19,7 @@ const cygwinRun = async (script) => {
 
     const bashPath = path.join(__dirname, "..", ".cygwin", "bin", "bash.exe")
 
-    const output = cp.spawnSync(bashPath, ["-lc", normalizePath(testFilePath)], {
-        env: {
-            "HOME": "/home/esyuser",
-        }
-    })
+    const output = cp.spawnSync(bashPath, ["-lc", normalizePath(testFilePath)])
     console.log(` - command returned with status: ${output.status}`)
 
     return {
