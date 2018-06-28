@@ -34,8 +34,9 @@ const install = async () => {
         "unzip",
 
         // Needed for installing the cygwin-build of OCaml
-        "gcc-g++",
-        "flexdll",
+        // May not be needed
+        // "gcc-g++",
+        // "flexdll",
     ]
 
     const destinationFolder = path.join(__dirname, ".cygwin")
@@ -67,22 +68,27 @@ const install = async () => {
 
     log(`Installation complete!`)
 
-    log(`Setting up OPAM...`)
-    const bashExecutablePath = path.join(destinationFolder, "bin", "bash.exe")
-    const opamScriptPath = path.resolve(path.join(__dirname, "install-opam.sh"))
+    // Temporarily remove OPAM setting - 
+    // this should only be including in the `esy` bootstrapping.
+    // Long-term, we shouldn't actually need this, since `esy` can handle the install
+    // and loading the dependencies for us.
 
-    cp.spawnSync(bashExecutablePath, [
-        "-l",
-        opamScriptPath,
-    ], {
-        stdio: "inherit",
-        encoding: "utf-8",
-        env: {
-            ...process.env
-        }
-    })
+    // log(`Setting up OPAM...`)
+    // const bashExecutablePath = path.join(destinationFolder, "bin", "bash.exe")
+    // const opamScriptPath = path.resolve(path.join(__dirname, "install-opam.sh"))
 
-    log(`OPAM setup complete`)
+    // cp.spawnSync(bashExecutablePath, [
+    //     "-l",
+    //     opamScriptPath,
+    // ], {
+    //     stdio: "inherit",
+    //     encoding: "utf-8",
+    //     env: {
+    //         ...process.env
+    //     }
+    // })
+
+    // log(`OPAM setup complete`)
 }
 
 if (os.platform() === "win32") {
