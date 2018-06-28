@@ -4,5 +4,7 @@
 
 const { bashExec } = require("./../index")
 const args = process.argv.slice(2).join(" ")
-bashExec(args)
 
+bashExec(args).then((code) => {
+    process.exit(code)
+})
