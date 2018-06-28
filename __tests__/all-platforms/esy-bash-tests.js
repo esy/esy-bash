@@ -31,3 +31,8 @@ it("can pass output to bash", async () => {
     expect(output.status).toBe(0)
     expect(output.stdout.indexOf("bash")).toBeGreaterThanOrEqual(0)
 })
+
+it("forwards exit code", async () => {
+    const output = await esyBashRun('exit 1')
+    expect(output.status).toBe(1)
+})
