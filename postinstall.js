@@ -15,10 +15,13 @@ const install = async () => {
     const cygMirror = "http://cygwin.mirror.constant.com"
 
     const packagesToInstall = [
+        // Needed for cross-compilation to Windows native executables
         "mingw64-x86_64-gcc-core",
         "mingw64-x86_64-headers",
         "mingw64-x86_64-runtime",
         "mingw64-x86_64-winpthreads",
+
+        // Linux utilities - 'bashisms' to support development
         "curl",
         "diff",
         "diffutils",
@@ -29,6 +32,10 @@ const install = async () => {
         "perl",
         "rsync",
         "unzip",
+
+        // Needed for installing the cygwin-build of OCaml
+        "gcc-g++",
+        "flexdll",
     ]
 
     const destinationFolder = path.join(__dirname, ".cygwin")
