@@ -12,9 +12,7 @@ matrix:
 install:
     - npm install
 
-build:
-    - npm test
-
 script:
     - npm --version
+    - npm test
 
