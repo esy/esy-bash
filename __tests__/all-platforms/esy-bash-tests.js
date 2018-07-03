@@ -8,7 +8,7 @@ const esyBashRun = async (script, envFilePath) => {
 
     const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 
-    const args = env ? [bashPath, "--env", envFilePath, script] : [bashPath, script]
+    const args = envFilePath ? [bashPath, "--env", envFilePath, script] : [bashPath, script]
 
     const output = cp.spawnSync("node", args)
     console.log(` - command returned with status: ${output.status}`)
