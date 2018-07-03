@@ -11,6 +11,9 @@ const esyBashRun = async (script) => {
     const output = cp.spawnSync("node", [bashPath, script])
     console.log(` - command returned with status: ${output.status}`)
 
+    console.log(` stdout: ${output.stdout}`)
+    console.log(` stderr: ${output.stderr}`)
+
     return {
         status: output.status,
         stdout: output.stdout.toString("utf8"),
