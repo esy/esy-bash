@@ -3,12 +3,14 @@ const os = require("os")
 const fs = require("fs")
 const path = require("path")
 
-const esyBashRun = async (script) => {
+const esyBashRun = async (script, envFilePath) => {
     console.log(`esy-bash: ${script}`)
 
     const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 
-    const output = cp.spawnSync("node", [bashPath, script])
+    const args = env ? [bashPath, "--env", envFilePath, script] : [bashPath, script]
+
+    const output = cp.spawnSync("node", args)
     console.log(` - command returned with status: ${output.status}`)
 
     console.log(` stdout: ${output.stdout}`)
@@ -47,7 +49,7 @@ describe("--env: environment file", async () => {
             "SOME_ENVIRONMENT_VARIABLE": "test-variable-value"
         })
 
-        const output = await esyBashRun(`--env ${environmentFilePath} echo $SOME_ENVIRONMENT_VARIABLE`)
+        const output = await esyBashRun("echo $SOME_ENVIRONMENT_VARIABLE", environmentFilePath)
 
         expect(output.stdout.indexOf("test-variable-value").toBeGreaterThanOrEqual(0))
     })
