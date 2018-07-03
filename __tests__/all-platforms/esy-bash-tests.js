@@ -38,7 +38,7 @@ it("forwards exit code", async () => {
 })
 
 describe("--env: environment file", async () => {
-    it("loads an environment variable from environment file", () => {
+    it("loads an environment variable from environment file", async () => {
         const environmentFilePath = path.join(os.tmpdir(), "env-file")
         const environment = JSON.stringify({
             "SOME_ENVIRONMENT_VARIABLE": "test-variable-value"
