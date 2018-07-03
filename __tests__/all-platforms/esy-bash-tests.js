@@ -36,3 +36,16 @@ it("forwards exit code", async () => {
     const output = await esyBashRun('exit 1')
     expect(output.status).toBe(1)
 })
+
+describe("--env: environment file", async () => {
+    it("loads an environment variable from environment file", () => {
+        const environmentFilePath = path.join(os.tmpdir(), "env-file")
+        const environment = JSON.stringify({
+            "SOME_ENVIRONMENT_VARIABLE": "test-variable-value"
+        })
+
+        const output = await esyBashRun(`--env ${environmentFilePath} echo $SOME_ENVIRONMENT_VARIABLE`)
+
+        expect(out.stdout.indexOf("test-variable-value").toBeGreaterThanOrEqual(0))
+    })
+})
