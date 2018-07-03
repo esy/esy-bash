@@ -16,7 +16,6 @@ let nonce = 0
 const remapPathsInEnvironment = (env) => {
     const val = Object.keys(env).reduce((prev, cur) => {
         const mappedVariable = cur.toLowerCase() === "path" ? process.env["PATH"] + ";" + normalizePath(env[cur]) : normalizePath(env[cur])
-        console.log(`Remapping environment variable [${cur}]: ${env[cur]} -> ${mappedVariable}`)
         return {
             ...prev,
             [cur]: mappedVariable,
