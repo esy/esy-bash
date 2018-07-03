@@ -49,6 +49,6 @@ describe("--env: environment file", async () => {
 
         const output = await esyBashRun(`--env ${environmentFilePath} echo $SOME_ENVIRONMENT_VARIABLE`)
 
-        expect(out.stdout.indexOf("test-variable-value").toBeGreaterThanOrEqual(0))
+        expect(output.stdout.indexOf("test-variable-value").toBeGreaterThanOrEqual(0))
     })
 })

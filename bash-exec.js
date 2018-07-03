@@ -64,7 +64,7 @@ const bashExec = (bashCommand, options) => {
         proc = cygwinExec(normalizedPath, mappedEnvironments)
     } else {
         // Add executable permission to script file
-        fs.chmodSync(temporaryScriptFile, "755")
+        fs.chmodSync(temporaryScriptFilePath, "755")
         proc = nativeBashExec(normalizedPath, env)
     }
 
