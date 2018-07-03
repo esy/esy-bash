@@ -48,6 +48,7 @@ describe("--env: environment file", async () => {
         const environment = JSON.stringify({
             "SOME_ENVIRONMENT_VARIABLE": "test-variable-value"
         })
+        fs.writeFileSync(environmentFilePath, environment)
 
         const output = await esyBashRun("echo $SOME_ENVIRONMENT_VARIABLE", environmentFilePath)
 
