@@ -37,10 +37,10 @@ const bashExec = (bashCommand, options) => {
 
         const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile)) 
 
-        env = {
+        env = remapPathsInEnvironment({
             ...env,
             ...envFromFile,
-        }
+        })
     }
 
     const bashCommandWithDirectoryPreamble = `
@@ -59,8 +59,7 @@ const bashExec = (bashCommand, options) => {
     let proc = null
 
     if (os.platform() === "win32") {
-        const mappedEnvironments = remapPathsInEnvironment(env)
-        proc = cygwinExec(normalizedPath, mappedEnvironments)
+        proc = cygwinExec(normalizedPath, env)
     } else {
         // Add executable permission to script file
         fs.chmodSync(temporaryScriptFilePath, "755")
