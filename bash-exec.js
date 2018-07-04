@@ -13,14 +13,39 @@ const normalizePath = (str) => {
 
 let nonce = 0
 
+const remapPathsInEnvironment = (env) => {
+    const val = Object.keys(env).reduce((prev, cur) => {
+        const mappedVariable = cur.toLowerCase() === "path" ? process.env["PATH"] + ";" + normalizePath(env[cur]) : normalizePath(env[cur])
+        return {
+            ...prev,
+            [cur]: mappedVariable,
+        }
+    }, {})
+    return val
+}
+
 const bashExec = (bashCommand, options) => {
     options = options || {}
     nonce++
-    console.log("esy-bash: executing bash command: " + bashCommand + `nonce: ${nonce}`)
+    const sanitizedCommand = bashCommand.split("\\").join("/")
+    console.log("esy-bash: executing bash command: " + sanitizedCommand + ` | nonce: ${nonce}`)
+
+    let env = process.env
+
+    if (options.environmentFile) {
+        console.log(" -- using environment file: " + options.environmentFile)
+
+        const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile)) 
+
+        env = {
+            ...env,
+            ...envFromFile,
+        }
+    }
 
     const bashCommandWithDirectoryPreamble = `
         cd ${normalizePath(process.cwd())}
-        ${bashCommand}
+        ${sanitizedCommand}
     `
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
 
@@ -29,13 +54,17 @@ const bashExec = (bashCommand, options) => {
 
     fs.writeFileSync(temporaryScriptFilePath, bashCommandWithDirectoryPreamble, "utf8")
     let normalizedPath = normalizePath(temporaryScriptFilePath)
+    console.log(" -- script file: " + normalizedPath)
 
     let proc = null
 
     if (os.platform() === "win32") {
-        proc = cygwinExec(normalizedPath, options)
+        const mappedEnvironments = remapPathsInEnvironment(env)
+        proc = cygwinExec(normalizedPath, mappedEnvironments)
     } else {
-        proc = nativeBashExec(normalizedPath, options)
+        // Add executable permission to script file
+        fs.chmodSync(temporaryScriptFilePath, "755")
+        proc = nativeBashExec(normalizedPath, env)
     }
 
     return new Promise((res, rej) => {
@@ -46,29 +75,26 @@ const bashExec = (bashCommand, options) => {
     })
 }
 
-const nativeBashExec = (bashCommandFilePath, options) => {
+const nativeBashExec = (bashCommandFilePath, env) => {
     return cp.spawn("bash", ["-c", bashCommandFilePath], {
         stdio: "inherit",
         cwd: process.cwd(),
-        ...options,
+        env: env,
     })
 }
 
 
-const cygwinExec = (bashCommandFilePath, options) => {
+const cygwinExec = (bashCommandFilePath, env) => {
 
     // Create a temporary shell script to run the command,
     // since the process doesn't respect `cwd`.
 
     const bashArguments = bashCommandFilePath ? "-lc" : "-l"
 
-    return cp.spawn(bashPath, [bashArguments, bashCommandFilePath], {
+    return cp.spawn(bashPath, [bashArguments, ". " + bashCommandFilePath], {
         stdio: "inherit",
         cwd: process.cwd(),
-        env: {
-            ...process.env,
-        },
-        ...options,
+        env: env,
     })
 }
 

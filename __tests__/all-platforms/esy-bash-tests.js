@@ -3,13 +3,18 @@ const os = require("os")
 const fs = require("fs")
 const path = require("path")
 
-const esyBashRun = async (script) => {
+const esyBashRun = async (script, envFilePath) => {
     console.log(`esy-bash: ${script}`)
 
     const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 
-    const output = cp.spawnSync("node", [bashPath, script])
+    const args = envFilePath ? [bashPath, "--env", envFilePath, script] : [bashPath, script]
+
+    const output = cp.spawnSync("node", args)
     console.log(` - command returned with status: ${output.status}`)
+
+    console.log(` stdout: ${output.stdout}`)
+    console.log(` stderr: ${output.stderr}`)
 
     return {
         status: output.status,
@@ -35,4 +40,19 @@ it("can pass output to bash", async () => {
 it("forwards exit code", async () => {
     const output = await esyBashRun('exit 1')
     expect(output.status).toBe(1)
+})
+
+describe("--env: environment file", async () => {
+    it("loads an environment variable from environment file", async () => {
+        const environmentFilePath = path.join(os.tmpdir(), "env-file")
+        const environment = JSON.stringify({
+            "SOME_ENVIRONMENT_VARIABLE": "test-variable-value"
+        })
+        fs.writeFileSync(environmentFilePath, environment)
+
+        const output = await esyBashRun("echo $SOME_ENVIRONMENT_VARIABLE", environmentFilePath)
+
+        expect(output.status).toEqual(0)
+        expect(output.stdout.indexOf("test-variable-value")).toBeGreaterThanOrEqual(0)
+    })
 })
