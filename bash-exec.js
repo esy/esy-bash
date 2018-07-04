@@ -35,11 +35,12 @@ const bashExec = (bashCommand, options) => {
     if (options.environmentFile) {
         console.log(" -- using environment file: " + options.environmentFile)
 
-        const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile)) 
+        const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile))
+        const remappedPaths = remapPathsInEnvironment(envFromFile)
 
         env = {
             ...env,
-            ...envFromFile,
+            ...remappedPaths,
         }
     }
 
@@ -59,8 +60,7 @@ const bashExec = (bashCommand, options) => {
     let proc = null
 
     if (os.platform() === "win32") {
-        const mappedEnvironments = remapPathsInEnvironment(env)
-        proc = cygwinExec(normalizedPath, mappedEnvironments)
+        proc = cygwinExec(normalizedPath, env)
     } else {
         // Add executable permission to script file
         fs.chmodSync(temporaryScriptFilePath, "755")
