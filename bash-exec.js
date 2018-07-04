@@ -54,6 +54,15 @@ const nativeBashExec = (bashCommandFilePath, options) => {
     })
 }
 
+const toCygwinPath = (originalPath) => {
+    if (os.platform() !== "win32") {
+        return originalPath
+    }
+
+    const normalizedPath = normalizePath(windowsPath)
+
+    return cp.spawnSync(bashPath, ["-lc", "cygpath", normalizedPath]).stdout.toString("utf8")
+}
 
 const cygwinExec = (bashCommandFilePath, options) => {
 
@@ -74,5 +83,6 @@ const cygwinExec = (bashCommandFilePath, options) => {
 
 module.exports = {
     bashExec,
+    toCyginPath,
 }
 

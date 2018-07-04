@@ -1,5 +1,6 @@
-const { bashExec } = require("./bash-exec")
+const { bashExec, toCygwinPath } = require("./bash-exec")
 
 module.exports = {
     bashExec,
+    toCygwinPath,
 }
