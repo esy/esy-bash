@@ -35,8 +35,8 @@ const bashExec = (bashCommand, options) => {
     if (options.environmentFile) {
         console.log(" -- using environment file: " + options.environmentFile)
 
-        const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile)) 
-        cosnt remappedPaths = remapPathsInEnvironment(envFromFile)
+        const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile))
+        const remappedPaths = remapPathsInEnvironment(envFromFile)
 
         env = {
             ...env,
