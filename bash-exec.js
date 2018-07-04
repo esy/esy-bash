@@ -36,11 +36,12 @@ const bashExec = (bashCommand, options) => {
         console.log(" -- using environment file: " + options.environmentFile)
 
         const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile)) 
+        cosnt remappedPaths = remapPathsInEnvironment(envFromFile)
 
-        env = remapPathsInEnvironment({
+        env = {
             ...env,
-            ...envFromFile,
-        })
+            ...remappedPaths,
+        }
     }
 
     const bashCommandWithDirectoryPreamble = `
