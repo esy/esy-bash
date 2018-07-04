@@ -59,9 +59,11 @@ const toCygwinPath = (originalPath) => {
         return originalPath
     }
 
-    const normalizedPath = normalizePath(windowsPath)
+    const normalizedPath = normalizePath(originalPath)
 
-    return cp.spawnSync(bashPath, ["-lc", "cygpath", normalizedPath]).stdout.toString("utf8")
+    const ret = cp.spawnSync(bashPath, ["-lc", `cygpath ${normalizedPath}`])
+    let val = ret.stdout.toString("utf8")
+    return val ? val.trim() : null
 }
 
 const cygwinExec = (bashCommandFilePath, options) => {
@@ -83,6 +85,6 @@ const cygwinExec = (bashCommandFilePath, options) => {
 
 module.exports = {
     bashExec,
-    toCyginPath,
+    toCygwinPath,
 }
 
