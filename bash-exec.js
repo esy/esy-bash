@@ -27,6 +27,10 @@ const remapPathsInEnvironment = (env) => {
 const bashExec = (bashCommand, options) => {
     options = options || {}
     nonce++
+
+    const cwd = options.cwd || process.cwd()
+
+
     const sanitizedCommand = bashCommand.split("\\").join("/")
     console.log("esy-bash: executing bash command: " + sanitizedCommand + ` | nonce: ${nonce}`)
 
@@ -44,8 +48,10 @@ const bashExec = (bashCommand, options) => {
         }
     }
 
+    console.log("USING CWD: " + cwd)
+
     const bashCommandWithDirectoryPreamble = `
-        cd ${normalizePath(process.cwd())}
+        cd ${normalizePath(cwd)}
         ${sanitizedCommand}
     `
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
@@ -59,12 +65,16 @@ const bashExec = (bashCommand, options) => {
 
     let proc = null
 
+    const opts = {
+        env,
+    }
+
     if (os.platform() === "win32") {
-        proc = cygwinExec(normalizedPath, env)
+        proc = cygwinExec(normalizedPath, opts)
     } else {
         // Add executable permission to script file
         fs.chmodSync(temporaryScriptFilePath, "755")
-        proc = nativeBashExec(normalizedPath, env)
+        proc = nativeBashExec(normalizedPath, opts)
     }
 
     return new Promise((res, rej) => {
@@ -75,11 +85,10 @@ const bashExec = (bashCommand, options) => {
     })
 }
 
-const nativeBashExec = (bashCommandFilePath, env) => {
+const nativeBashExec = (bashCommandFilePath, opts) => {
     return cp.spawn("bash", ["-c", bashCommandFilePath], {
         stdio: "inherit",
-        cwd: process.cwd(),
-        env: env,
+        ...opts,
     })
 }
 
@@ -95,7 +104,7 @@ const toCygwinPath = (originalPath) => {
     return val ? val.trim() : null
 }
 
-const cygwinExec = (bashCommandFilePath, env) => {
+const cygwinExec = (bashCommandFilePath, opts) => {
 
     // Create a temporary shell script to run the command,
     // since the process doesn't respect `cwd`.
@@ -104,8 +113,7 @@ const cygwinExec = (bashCommandFilePath, env) => {
 
     return cp.spawn(bashPath, [bashArguments, ". " + bashCommandFilePath], {
         stdio: "inherit",
-        cwd: process.cwd(),
-        env: env,
+        ...opts,
     })
 }
 
