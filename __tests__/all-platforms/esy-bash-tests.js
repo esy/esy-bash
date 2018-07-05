@@ -3,6 +3,8 @@ const os = require("os")
 const fs = require("fs")
 const path = require("path")
 
+const { bashExec } = require("./../../index")
+
 const esyBashRun = async (script, envFilePath) => {
     console.log(`esy-bash: ${script}`)
 
@@ -54,5 +56,19 @@ describe("--env: environment file", async () => {
 
         expect(output.status).toEqual(0)
         expect(output.stdout.indexOf("test-variable-value")).toBeGreaterThanOrEqual(0)
+    })
+})
+
+describe("cwd parameter", () => {
+    it("respects the cwd parameter", async () => {
+        const testDirectoryName = "test-directory-" + new Date().getTime().toString()
+        const testDirectoryPath = path.join(os.tmpdir(), testDirectoryName)
+        fs.mkdirSync(testDirectoryPath)
+
+        await bashExec("touch testfile", { cwd: testDirectoryPath })
+
+        const doesFileExist = fs.existsSync(path.join(testDirectoryPath, "testfile"))
+
+        expect(doesFileExist).toBe(true)
     })
 })
