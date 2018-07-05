@@ -48,8 +48,6 @@ const bashExec = (bashCommand, options) => {
         }
     }
 
-    console.log("USING CWD: " + cwd)
-
     const bashCommandWithDirectoryPreamble = `
         cd ${normalizePath(cwd)}
         ${sanitizedCommand}
