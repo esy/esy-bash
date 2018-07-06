@@ -5,10 +5,11 @@ const path = require("path")
 
 const { bashExec } = require("./../../index")
 
+
+const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
+
 const esyBashRun = async (script, envFilePath) => {
     console.log(`esy-bash: ${script}`)
-
-    const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 
     const args = envFilePath ? [bashPath, "--env", envFilePath, script] : [bashPath, script]
 
@@ -70,5 +71,16 @@ describe("cwd parameter", () => {
         const doesFileExist = fs.existsSync(path.join(testDirectoryPath, "testfile"))
 
         expect(doesFileExist).toBe(true)
+    })
+})
+
+describe("arguments", () => {
+    it("respects arguments passed in", async () => {
+
+        const result = cp.spawnSync("node", [bashPath, "sh", "-c", "(echo Hello || true)"])
+
+        expect(output.status).toEqual(0)
+        expect(output.stdout.indexOf("Hello")).toBeGreaterThanOrEqual(0)
+
     })
 })
