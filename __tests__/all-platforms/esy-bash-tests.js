@@ -79,8 +79,8 @@ describe("arguments", () => {
 
         const result = cp.spawnSync("node", [bashPath, "sh", "-c", "(echo Hello || true)"])
 
-        expect(output.status).toEqual(0)
-        expect(output.stdout.indexOf("Hello")).toBeGreaterThanOrEqual(0)
+        expect(result.status).toEqual(0)
+        expect(result.stdout.indexOf("Hello")).toBeGreaterThanOrEqual(0)
 
     })
 })
