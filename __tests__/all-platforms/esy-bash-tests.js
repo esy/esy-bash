@@ -58,6 +58,18 @@ describe("--env: environment file", async () => {
         expect(output.status).toEqual(0)
         expect(output.stdout.indexOf("test-variable-value")).toBeGreaterThanOrEqual(0)
     })
+
+    it("loads PATH correctly from environment file", async () => {
+        const environmentFilePath = path.join(os.tmpdir(), "env-file")
+        const environment = JSON.stringify({
+            "PATH": "C:\\Users\\bryph\\.esy\\3_/i/opam__slash__jbuilder-1.0.0-beta20-6990b2ff/bin;C:\\Users\\bryph\\.esy\\3_/i/ocaml-4.6.4-092f4a41/bin;C:\\Users\\bryph\\.esy\\3_/i/esy_ocaml__slash__esy_installer-0.0.0-821110a6/bin;C:\\Users\\bryph\\.esy\\3_/i/esy_ocaml__slash__substs-0.0.1-49144bdf/bin;C:\\hello-world"
+        })
+        fs.writeFileSync(environmentFilePath, environment)
+
+        const output = await esyBashRun("echo $PATH", environmentFilePath)
+        expect(output.status).toEqual(0)
+        expect(output.stdout.indexOf("hello-world")).toBeGreaterThanOrEqual(0)
+    })
 })
 
 describe("cwd parameter", () => {
