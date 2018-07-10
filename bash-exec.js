@@ -15,7 +15,9 @@ let nonce = 0
 
 const remapPathsInEnvironment = (env) => {
     const val = Object.keys(env).reduce((prev, cur) => {
-        const mappedVariable = cur.toLowerCase() === "path" ? process.env["PATH"] + ";" + normalizePath(env[cur]) : normalizePath(env[cur])
+        // Normalize PATH variable
+        cur = cur.toLowerCase() === "path" ? "PATH" : cur
+        let mappedVariable = cur === "PATH" ? normalizePath(env[cur]): normalizePath(env[cur])
         return {
             ...prev,
             [cur]: mappedVariable,
@@ -46,6 +48,8 @@ const bashExec = (bashCommand, options) => {
             ...env,
             ...remappedPaths,
         }
+
+        env["path"] = env["Path"] = remappedPaths["PATH"]
     }
 
     const bashCommandWithDirectoryPreamble = `
