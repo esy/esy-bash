@@ -14,7 +14,7 @@ if (process.argv.length >= 3 && process.argv[2] === "--env") {
 
 
 const argsToSend = opts ? process.argv.slice(4) : process.argv.slice(2);
-const sanitizeArgs = (args) => args.map(a => "\"" + a + "\"").join(" ");
+const sanitizeArgs = (args) => args.map((a, idx) => idx === 0 ? a : "\"" + a + "\"").join(" ");
 
 const sanitizedArgs = argsToSend.length > 1 ? sanitizeArgs(argsToSend) : argsToSend[0]
 
