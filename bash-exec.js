@@ -13,6 +13,12 @@ const normalizePath = (str) => {
 
 let nonce = 0
 
+const log = (msg) => {
+    if (process.env.ESY_BASH_DEBUG) {
+        console.log(msg)
+    }
+}
+
 const remapPathsInEnvironment = (env) => {
     const val = Object.keys(env).reduce((prev, cur) => {
         // Normalize PATH variable
@@ -34,12 +40,12 @@ const bashExec = (bashCommand, options) => {
 
 
     const sanitizedCommand = bashCommand.split("\\").join("/")
-    console.log("esy-bash: executing bash command: " + sanitizedCommand + ` | nonce: ${nonce}`)
+    log("esy-bash: executing bash command: " + sanitizedCommand + ` | nonce: ${nonce}`)
 
     let env = process.env
 
     if (options.environmentFile) {
-        console.log(" -- using environment file: " + options.environmentFile)
+        log(" -- using environment file: " + options.environmentFile)
 
         const envFromFile = JSON.parse(fs.readFileSync(options.environmentFile))
         const remappedPaths = remapPathsInEnvironment(envFromFile)
@@ -53,6 +59,7 @@ const bashExec = (bashCommand, options) => {
     }
 
     const bashCommandWithDirectoryPreamble = `
+        # environment file: ${options.environmentFile}
         cd ${normalizePath(cwd)}
         ${sanitizedCommand}
     `
@@ -63,7 +70,7 @@ const bashExec = (bashCommand, options) => {
 
     fs.writeFileSync(temporaryScriptFilePath, bashCommandWithDirectoryPreamble, "utf8")
     let normalizedPath = normalizePath(temporaryScriptFilePath)
-    console.log(" -- script file: " + normalizedPath)
+    log(" -- script file: " + normalizedPath)
 
     let proc = null
 
@@ -81,7 +88,7 @@ const bashExec = (bashCommand, options) => {
 
     return new Promise((res, rej) => {
         proc.on("close", (code) => {
-            console.log("esy-bash: process exited with code " + code)
+            log("esy-bash: process exited with code " + code)
             res(code)
         })
     })
