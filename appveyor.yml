@@ -7,7 +7,7 @@ install:
 
 environment:
   NPM_TOKEN:
-    secure: tn+QdOpbc23VnXwhDY5U8y3Yd+oIO3Jx4iMdGUKGM+gjWgu5+8Y0WfyEzZsSFRzn
+    secure: xczby7HP6CaMEUh0VCk+mOHHnRuTnLnCl5C2iRGxCPiX5yXIlvnyVZktk1rhz/NY
 
 build_script:
     - npm test
