@@ -17,6 +17,7 @@ const install = async () => {
     const packagesToInstall = [
         // Needed for cross-compilation to Windows native executables
         "mingw64-x86_64-gcc-core",
+        "mingw64-x86_64-gcc-g++",
         "mingw64-x86_64-headers",
         "mingw64-x86_64-runtime",
         "mingw64-x86_64-winpthreads",
