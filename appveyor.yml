@@ -23,4 +23,4 @@ deploy_script:
         iex "npm publish --tag next"
       }
     on:
-      branch: master
+      branches: next
