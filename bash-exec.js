@@ -38,7 +38,9 @@ const bashExec = (bashCommand, options) => {
 
     const cwd = options.cwd || process.cwd()
 
-    log("esy-bash: executing bash command: " + bashCommand + ` | nonce: ${nonce}`)
+
+    const sanitizedCommand = bashCommand.split("\\").join("/")
+    log("esy-bash: executing bash command: " + sanitizedCommand + ` | nonce: ${nonce}`)
 
     let env = process.env
 
@@ -59,7 +61,7 @@ const bashExec = (bashCommand, options) => {
     const bashCommandWithDirectoryPreamble = `
         # environment file: ${options.environmentFile}
         cd ${normalizePath(cwd)}
-        ${bashCommand}
+        ${sanitizedCommand}
     `
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
 
