@@ -38,6 +38,8 @@ const bashExec = (bashCommand, options) => {
 
     const cwd = options.cwd || process.cwd()
 
+
+    const sanitizedCommand = bashCommand
     log("esy-bash: executing bash command: " + sanitizedCommand + ` | nonce: ${nonce}`)
 
     let env = process.env

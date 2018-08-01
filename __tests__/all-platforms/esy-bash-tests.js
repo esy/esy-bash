@@ -5,7 +5,6 @@ const path = require("path")
 
 const { bashExec } = require("./../../index")
 
-
 const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 
 const esyBashRun = async (script, envFilePath) => {
@@ -31,6 +30,12 @@ it("can pass basic statement to bash", async () => {
 
     expect(output.status).toBe(0)
     expect(output.stdout.indexOf("Hello World")).toBeGreaterThanOrEqual(0)
+})
+
+it("doesn't escape", async () => {
+    const output = await esyBashRun('echo "Hello\nworld"')
+    expect(output.status).toBe(0)
+    expect(output.stdout).toEqual("Hello" + "\n" + "world" + "\n")
 })
 
 it("can pass output to bash", async () => {
