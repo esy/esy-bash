@@ -56,6 +56,11 @@ const bashExec = (bashCommand, options) => {
         env["path"] = env["Path"] = remappedPaths["PATH"]
     }
 
+    env = {
+        ...env,
+        "CYGWIN": "winsymlinks:nativestrict",
+    }
+
     const bashCommandWithDirectoryPreamble = `
         # environment file: ${options.environmentFile}
         cd ${normalizePath(cwd)}
