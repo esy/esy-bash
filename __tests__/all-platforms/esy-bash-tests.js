@@ -3,7 +3,7 @@ const os = require("os")
 const fs = require("fs")
 const path = require("path")
 
-const { bashExec } = require("./../../index")
+const { bashExec, toCygwinPath } = require("./../../index")
 
 const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 
@@ -23,6 +23,11 @@ const esyBashRun = async (script, envFilePath) => {
         stdout: output.stdout.toString("utf8"),
         stderr: output.stderr.toString("utf8"),
     }
+}
+
+const getTempDirectory = () => {
+    const testDirectoryName = "test-directory-" + new Date().getTime().toString()
+    return path.join(os.tmpdir(), testDirectoryName)
 }
 
 it("can pass basic statement to bash", async () => {
@@ -67,8 +72,7 @@ describe("--env: environment file", async () => {
 
 describe("cwd parameter", () => {
     it("respects the cwd parameter", async () => {
-        const testDirectoryName = "test-directory-" + new Date().getTime().toString()
-        const testDirectoryPath = path.join(os.tmpdir(), testDirectoryName)
+        const testDirectoryPath = getTempDirectory()
         fs.mkdirSync(testDirectoryPath)
 
         await bashExec("touch testfile", { cwd: testDirectoryPath })
@@ -87,5 +91,27 @@ describe("arguments", () => {
         expect(result.status).toEqual(0)
         expect(result.stdout.indexOf("Hello")).toBeGreaterThanOrEqual(0)
 
+    })
+})
+
+describe("symlinks", () => {
+    it("create and read from symlink", async () => {
+        const tempDirectoryPath = getTempDirectory()
+        fs.mkdirSync(tempDirectoryPath)
+
+        console.log(tempDirectoryPath)
+
+        const sourceFilePath = path.join(tempDirectoryPath, "src.txt")
+        const destFilePath = path.join(tempDirectoryPath, "dest.txt")
+
+        fs.writeFileSync(sourceFilePath, "test file", "utf8")
+
+        const output = await esyBashRun(`ln -s ${toCygwinPath(sourceFilePath)} ${toCygwinPath(destFilePath)}`)
+
+        expect(output.status).toEqual(0)
+        expect(fs.existsSync(destFilePath)).toBeTruthy()
+
+        const destFileContents = fs.readFileSync(destFilePath).toString("utf8")
+        expect(destFileContents).toEqual("test file")
     })
 })
