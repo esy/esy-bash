@@ -32,6 +32,25 @@ const remapPathsInEnvironment = (env) => {
     return val
 }
 
+// From: https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
+const getHashCode = (str) => {
+    var hash = 0, i, chr;
+  if (str.length === 0) return hash;
+  for (i = 0; i < str.length; i++) {
+          chr   = str.charCodeAt(i);
+          hash  = ((hash << 5) - hash) + chr;
+          hash |= 0; // Convert to 32bit integer
+    }
+  return hash;
+}
+
+const getUniqueId = (bashCommand) => {
+    const hash = getHashCode(bashCommand);
+    const time = new Date().getTime();
+
+    return `${hash.toString()}_${time.toString()}`
+}
+
 const bashExec = (bashCommand, options) => {
     options = options || {}
     nonce++
@@ -69,7 +88,7 @@ const bashExec = (bashCommand, options) => {
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
 
     const tmp = os.tmpdir()
-    const temporaryScriptFilePath = path.join(tmp, `__esy-bash__${new Date().getTime()}__${nonce}__.sh`)
+    const temporaryScriptFilePath = path.join(tmp, `__esy-bash__${getUniqueId(bashCommand)}__${nonce}__.sh`)
 
     fs.writeFileSync(temporaryScriptFilePath, bashCommandWithDirectoryPreamble, "utf8")
     let normalizedPath = normalizePath(temporaryScriptFilePath)
