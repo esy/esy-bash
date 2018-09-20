@@ -32,6 +32,10 @@ const remapPathsInEnvironment = (env) => {
     return val
 }
 
+const getUniqueId = (bashCommand) => {
+    return new Date().getTime();
+}
+
 const bashExec = (bashCommand, options) => {
     options = options || {}
     nonce++
@@ -66,7 +70,7 @@ const bashExec = (bashCommand, options) => {
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
 
     const tmp = os.tmpdir()
-    const temporaryScriptFilePath = path.join(tmp, `__esy-bash__${new Date().getTime()}__${nonce}__.sh`)
+    const temporaryScriptFilePath = path.join(tmp, `__esy-bash__${getUniqueId(bashCommand)}__${nonce}__.sh`)
 
     fs.writeFileSync(temporaryScriptFilePath, bashCommandWithDirectoryPreamble, "utf8")
     let normalizedPath = normalizePath(temporaryScriptFilePath)
