@@ -38,9 +38,7 @@ const bashExec = (bashCommand, options) => {
 
     const cwd = options.cwd || process.cwd()
 
-
-    const sanitizedCommand = bashCommand.split("\\").join("/")
-    log("esy-bash: executing bash command: " + sanitizedCommand + ` | nonce: ${nonce}`)
+    log("esy-bash: executing bash command: " + bashCommand + ` | nonce: ${nonce}`)
 
     let env = process.env
 
@@ -58,10 +56,15 @@ const bashExec = (bashCommand, options) => {
         env["path"] = env["Path"] = remappedPaths["PATH"]
     }
 
+    env = {
+        ...env,
+        "CYGWIN": "winsymlinks:nativestrict",
+    }
+
     const bashCommandWithDirectoryPreamble = `
         # environment file: ${options.environmentFile}
         cd ${normalizePath(cwd)}
-        ${sanitizedCommand}
+        ${bashCommand}
     `
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
 
