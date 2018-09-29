@@ -1,5 +1,6 @@
 (library
-  (name lib)
-  (flags (-w -40 -w +26))
-  (public_name hello-reason)
-  (libraries lambda-term lwt))
+  (name EsyBashLib)
+  (flags (-w -40 -w +26 -cclib -lunix))
+  (ocamlc_flags -custom unix.cma)
+  (public_name esy-bash.lib)
+  (libraries unix yojson))
