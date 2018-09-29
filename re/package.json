@@ -7,19 +7,30 @@
     "build": "refmterr dune build -p #{self.name}",
     "NOTE": "Optional release Section. Customizes result of `esy release`",
     "release": {
-      "releasedBinaries": [ "EsyBash.exe" ],
-      "deleteFromBinaryRelease": [ "*esy_ocaml_*", "*refmterr-*", "ocaml-*" ]
+      "releasedBinaries": [
+        "EsyBash.exe"
+      ],
+      "deleteFromBinaryRelease": [
+        "*esy_ocaml_*",
+        "*refmterr-*",
+        "ocaml-*"
+      ]
     }
   },
   "dependencies": {
-    "@esy-ocaml/reason": "*",
     "@opam/dune": "*",
     "@opam/lambda-term": "*",
     "@opam/lwt": "*",
-    "@opam/yojson": "1.4.1",
-    "ocaml": "~4.6.0",
-    "refmterr": "*"
+    "@esy-ocaml/reason": "*",
+    "refmterr": "*",
+    "ocaml": "~4.6.0"
   },
-  "resolutions": { "@esy-ocaml/esy-installer": "0.0.1", "@opam/re": "1.8.0" },
-  "devDependencies": { "@esy-ocaml/merlin": "*", "ocaml": "~4.6.0" }
+  "resolutions": {
+    "@esy-ocaml/esy-installer": "0.0.1",
+    "@opam/re": "1.8.0"
+  },
+  "devDependencies": {
+    "@esy-ocaml/merlin": "*",
+    "ocaml": "~4.6.0"
+  }
 }

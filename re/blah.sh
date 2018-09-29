@@ -1,2 +1,2 @@
 #! /bin/bash
-echo "We are here" $foo $bar
+echo "We are here" $foo $PATH

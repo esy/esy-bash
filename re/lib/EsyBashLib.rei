@@ -1,1 +1,1 @@
-let bashExec: (~environmentFile: string=?, array('a)) => int;
+let bashExec: (~environmentFile: string=?, string) => 'a;

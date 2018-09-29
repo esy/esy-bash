@@ -1,3 +1,4 @@
+let serialiseAsOneCommand = args => String.concat(" ", Array.to_list(args));
 let sysArgvLen = Array.length(Sys.argv);
 /* Argument parsing could be improved I guess, simply copied from current logic */
 let exitCode =
@@ -5,10 +6,10 @@ let exitCode =
     let environmentFile = Sys.argv[2];
     EsyBashLib.bashExec(
       ~environmentFile,
-      Array.sub(Sys.argv, 2, sysArgvLen - 2),
+      serialiseAsOneCommand(Array.sub(Sys.argv, 3, sysArgvLen - 3)),
     );
   } else {
-    EsyBashLib.bashExec(Array.sub(Sys.argv, 1, sysArgvLen - 1));
+    EsyBashLib.bashExec(
+      serialiseAsOneCommand(Array.sub(Sys.argv, 1, sysArgvLen - 1)),
+    );
   };
-
-exit(exitCode);
