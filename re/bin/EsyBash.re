@@ -13,3 +13,5 @@ let exitCode =
       serialiseAsOneCommand(Array.sub(Sys.argv, 1, sysArgvLen - 1)),
     );
   };
+
+exit(exitCode);

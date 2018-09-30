@@ -1,8 +1,8 @@
 exception InvalidEnvJSON(string);
 exception InvariantViolation(unit);
 
-let pathDelimStr = Sys.os_type == "Unix" ? "/": "\\";
-let pathDelimChr =  String.get(pathDelimStr, 0);
+let pathDelimStr = Sys.os_type == "Unix" ? "/" : "\\";
+let pathDelimChr = pathDelimStr.[0];
 
 let normalizePath = str =>
   String.concat("/", String.split_on_char(pathDelimChr, str));
@@ -50,7 +50,8 @@ let extractEnvironmentVariables = environmentFile => {
 
 let nonce = ref(0);
 let bashExec = (~environmentFile=?, command) => {
-  let shellPath = Sys.os_type == "Unix" ? "/bin/bash": "C:\\cygwin\\bin\\bash.exe"; /* "..\\.cygwin\\bin.bash.exe"; */
+  let shellPath =
+    Sys.os_type == "Unix" ? "/bin/bash" : "C:\\cygwin\\bin\\bash.exe"; /* "..\\.cygwin\\bin.bash.exe"; */
   nonce := nonce^ + 1;
   /* Is this really important? exec* api won't print it*/
   /* Printf.printf( */
@@ -64,34 +65,47 @@ let bashExec = (~environmentFile=?, command) => {
       string_of_int(Hashtbl.hash(command)),
       string_of_int(nonce^),
     );
-  let tempFilePath = Sys.getenv(Sys.os_type == "Unix" ? "TMPDIR" : "TMP") ++ pathDelimStr ++ tmpFileName;
+  let tempFilePath =
+    Sys.getenv(Sys.os_type == "Unix" ? "TMPDIR" : "TMP")
+    ++ pathDelimStr
+    ++ tmpFileName;
   let cygwinSymlinkVar = "CYGWIN=winsymlinks:nativestrict";
 
   let bashCommandWithDirectoryPreamble =
-      Printf.sprintf(
-        "cd %s;\n%s;",
-        normalizePath(Sys.getcwd()),
-        command,
-      );
+    Printf.sprintf("cd %s;\n%s;", normalizePath(Sys.getcwd()), command);
   let normalizedShellScript =
     normalizeEndlines(bashCommandWithDirectoryPreamble);
-  
+
   let fileChannel = open_out_bin(tempFilePath);
   Printf.fprintf(fileChannel, "%s", normalizedShellScript);
   close_out(fileChannel);
 
-  switch (environmentFile) {
-  | Some(x) =>
-    let vars =
-      remapPathsInEnvironment(
-        Array.of_list([cygwinSymlinkVar, ...extractEnvironmentVariables(x)]),
+  let run_shell =
+    switch (environmentFile) {
+    | Some(x) =>
+      let vars =
+        remapPathsInEnvironment(
+          Array.of_list([
+            cygwinSymlinkVar,
+            ...extractEnvironmentVariables(x),
+          ]),
+        );
+      let existingVars = Unix.environment();
+      Unix.create_process_env(
+        shellPath,
+        [|Sys.os_type == "Unix" ? "-c" : "-lc", tempFilePath|],
+        Array.append(existingVars, vars),
       );
-    let existingVars = Unix.environment();
-    Unix.execve(
-      shellPath,
-      [|Sys.os_type == "Unix" ? "-c": "-lc",  tempFilePath |],
-      Array.append(existingVars, vars),
-    );
-  | None => Unix.execv(shellPath, [|Sys.os_type == "Unix" ? "-c": "-lc", tempFilePath|])
+    | None =>
+      Unix.create_process(
+        shellPath,
+        [|Sys.os_type == "Unix" ? "-c" : "-lc", tempFilePath|],
+      )
+    };
+  let pid = run_shell(Unix.stdin, Unix.stdout, Unix.stderr);
+  switch (Unix.waitpid([], pid)) {
+  | (_, WEXITED(c)) => c
+  | (_, WSIGNALED(c)) => c
+  | (_, WSTOPPED(c)) => c
   };
 };
