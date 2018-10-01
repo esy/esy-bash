@@ -20,6 +20,7 @@
   "dependencies": {
     "@opam/dune": "*",
     "@esy-ocaml/reason": "*",
+    "@opam/ppx_inline_test": "*",
     "refmterr": "*",
     "ocaml": "~4.6.0"
   },
