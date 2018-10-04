@@ -11,8 +11,12 @@ matrix:
           node_js: 8
 install:
     - npm install
+    - npm install -g esy@latest
+    - cd re
+    - esy install
 
 script:
     - npm --version
-    - npm test
+    - esy build
+    # - npm test
 
