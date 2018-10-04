@@ -18,5 +18,6 @@ install:
 script:
     - npm --version
     - esy build
+    - echo "dune runtest" | esy shell
     # - npm test
 

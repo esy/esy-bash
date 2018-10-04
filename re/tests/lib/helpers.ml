@@ -6,11 +6,16 @@ let contains s1 s2 =
     Str.search_forward re s1 0
   with Not_found -> -1
 
-                  
-let run_esy_bash args_str =
+let run_esy_bash ?env_file args_str =
   let existing_vars = Unix.environment () in
   let shell_path = if Sys.unix then "../../bin/EsyBash.exe" else "..\\..\\bin\\EsyBash.exe" in
-  let run_process = Unix.open_process_full (shell_path ^ " " ^ args_str) existing_vars       
+  let escaping_quotes = if Sys.unix then "'" else "\"" in
+  let shell_args =
+    let escaped_commands = escaping_quotes ^ args_str ^ escaping_quotes in
+    match env_file with
+    | Some x -> "--env " ^ x ^ " " ^ escaped_commands
+    | None -> escaped_commands in
+  let run_process = Unix.open_process_full (shell_path ^ " " ^ shell_args) existing_vars       
   in
   let (p_out_chan, p_in_chan, p_err_chan) = run_process in
   let out_buf = ref "" in

@@ -4,8 +4,8 @@ let%test "can pass basic statement to bash" =
 
 
 let%test "forwards exit code" =
-  let (_out, _err,  exit_code) = Helpers.run_esy_bash "exit 1" in
-  exit_code = 1
+  let (_out, _err,  exit_code) = Helpers.run_esy_bash "exit 15" in
+  exit_code = 15
 
 
 let%test "--env: environment file" =
@@ -22,15 +22,15 @@ let%test "--env: environment file" =
 |json};
   close_out fileChannel;
   
-  let (out, _err, exit_code) = Helpers.run_esy_bash ("--env " ^ tempFilePath ^ " echo \\$foo") in
+  let (out, _err, exit_code) = Helpers.run_esy_bash ~env_file:tempFilePath "echo $foo" in
   exit_code = 0 && (Helpers.contains out "foovalue") = 0
-                
 
 
 
-let%test "doesn't escape" = true (* TODO *)
-let%test "can pass output to bash" = true (* TODO *)
-let%test "respects the cwd parameter" = true (* TODO *)
-let%test "symlinks" = true (* TODO *)
+
+(* let%test "doesn't escape." = true (\* TODO *\)
+ * let%test "can pass output to bash." = true (\* TODO *\)
+ * let%test "respects the cwd parameter." = true (\* TODO *\)
+ * let%test "symlinks." = true (\* TODO *\) *)
                                                            
   
