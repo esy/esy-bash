@@ -29,7 +29,8 @@
   },
   "resolutions": {
     "@esy-ocaml/esy-installer": "0.0.1",
-    "@opam/re": "1.8.0"
+    "@opam/re": "1.8.0",
+    "@opam/menhir": "20171013"
   },
   "devDependencies": {
     "@esy-ocaml/merlin": "*",
