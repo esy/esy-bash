@@ -1,17 +1,29 @@
 platform:
     - x64
-    - x86
+
+cache:
+    - C:\Users\appveyor\.esy
 
 install:
+    # The x64 is required as a workaround for esy/esy#412
+    - ps: Install-Product node 8 x64
     - npm install
+    - cd re/
+    - npm install -g esy@0.2.11
+    # Retry is necessary due to esy/esy#413 and esy/esy#414
+    - appveyor-retry esy install
 
+# Workaround for esy/esy#388
 environment:
+  HOME: C:\Users\appveyor
   NPM_TOKEN:
     secure: h3hweU1D+fx2hyHtCSUHVkR7pKf7XpCEwC0/E/a+7vxnus3hArWb4w0WjynzOPJ+
 
 build_script:
     - npm test
-
+    - esy build
+    - esy test
+    
 test: off
 
 deploy_script:
