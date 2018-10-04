@@ -53,12 +53,12 @@ let bashExec = (~environmentFile=?, command) => {
   let shellPath =
     Sys.os_type == "Unix" ? "/bin/bash" : "C:\\cygwin\\bin\\bash.exe"; /* "..\\.cygwin\\bin.bash.exe"; */
   nonce := nonce^ + 1;
-  /* Is this really important? exec* api won't print it*/
-  /* Printf.printf( */
-  /*   "esy-bash: executing bash command: %s |  nonce %s\n", */
-  /*   command, */
-  /*   string_of_int(nonce^), */
-  /* ); */
+  Printf.printf(
+    "esy-bash: executing bash command: %s |  nonce %s\n",
+    command,
+    string_of_int(nonce^),
+  );
+  flush(stdout); /* since printf is buffered */
   let tmpFileName =
     Printf.sprintf(
       "__esy-bash__%s__%s__.sh",
