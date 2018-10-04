@@ -17,6 +17,9 @@
       ]
     }
   },
+  "scripts": {
+    "test": "dune runtest"
+  },
   "dependencies": {
     "@opam/dune": "*",
     "@esy-ocaml/reason": "*",

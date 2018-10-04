@@ -4,6 +4,19 @@ exception InvariantViolation(unit);
 let pathDelimStr = Sys.os_type == "Unix" ? "/" : "\\";
 let pathDelimChr = pathDelimStr.[0];
 
+let log = msg => {
+  let debugMode =
+    (
+      try (Sys.getenv("ESY_BASH_DEBUG")) {
+      | Not_found => ""
+      }
+    )
+    != "";
+  if (debugMode) {
+    print_endline(msg);
+  };
+};
+
 let normalizePath = str =>
   String.concat("/", String.split_on_char(pathDelimChr, str));
 
@@ -53,12 +66,13 @@ let bashExec = (~environmentFile=?, command) => {
   let shellPath =
     Sys.os_type == "Unix" ? "/bin/bash" : "C:\\cygwin\\bin\\bash.exe"; /* "..\\.cygwin\\bin.bash.exe"; */
   nonce := nonce^ + 1;
-  Printf.printf(
-    "esy-bash: executing bash command: %s |  nonce %s\n",
-    command,
-    string_of_int(nonce^),
+  log(
+    Printf.sprintf(
+      "esy-bash: executing bash command: %s |  nonce %s\n",
+      command,
+      string_of_int(nonce^),
+    ),
   );
-  flush(stdout); /* since printf is buffered */
   let tmpFileName =
     Printf.sprintf(
       "__esy-bash__%s__%s__.sh",
