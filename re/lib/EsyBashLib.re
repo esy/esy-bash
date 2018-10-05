@@ -1,7 +1,7 @@
 exception InvalidEnvJSON(string);
 exception InvariantViolation(unit);
 
-let pathDelimStr = Sys.os_type == "Unix" ? "/" : "\\";
+let pathDelimStr = Sys.unix ? "/" : "\\";
 let pathDelimChr = pathDelimStr.[0];
 
 let log = msg => {
@@ -63,8 +63,7 @@ let extractEnvironmentVariables = environmentFile => {
 
 let nonce = ref(0);
 let bashExec = (~environmentFile=?, command) => {
-  let shellPath =
-    Sys.os_type == "Unix" ? "/bin/bash" : "C:\\cygwin\\bin\\bash.exe"; /* "..\\.cygwin\\bin.bash.exe"; */
+  let shellPath = Sys.unix ? "/bin/bash" : "C:\\cygwin\\bin\\bash.exe"; /* "..\\.cygwin\\bin.bash.exe"; */
   nonce := nonce^ + 1;
   log(
     Printf.sprintf(
@@ -80,9 +79,7 @@ let bashExec = (~environmentFile=?, command) => {
       string_of_int(nonce^),
     );
   let tempFilePath =
-    Sys.getenv(Sys.os_type == "Unix" ? "TMPDIR" : "TMP")
-    ++ pathDelimStr
-    ++ tmpFileName;
+    Sys.getenv(Sys.unix ? "TMPDIR" : "TMP") ++ pathDelimStr ++ tmpFileName;
   let cygwinSymlinkVar = "CYGWIN=winsymlinks:nativestrict";
 
   let bashCommandWithDirectoryPreamble =
@@ -107,13 +104,13 @@ let bashExec = (~environmentFile=?, command) => {
       let existingVars = Unix.environment();
       Unix.create_process_env(
         shellPath,
-        [|Sys.os_type == "Unix" ? "-c" : "-lc", tempFilePath|],
+        [|Sys.unix ? "-c" : "-lc", tempFilePath|],
         Array.append(existingVars, vars),
       );
     | None =>
       Unix.create_process(
         shellPath,
-        [|Sys.os_type == "Unix" ? "-c" : "-lc", tempFilePath|],
+        [|Sys.unix ? "-c" : "-lc", tempFilePath|],
       )
     };
   let pid = run_shell(Unix.stdin, Unix.stdout, Unix.stderr);

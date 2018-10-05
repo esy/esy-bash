@@ -1,14 +1,14 @@
-let%test "can pass basic statement to bash" =
+let%test "can pass basic statement to bash." =
   let (out, err,  exit_code) = Helpers.run_esy_bash "echo Hello World" in
   exit_code = 0 && (Helpers.contains out "Hello World") = 0 && (err = "")
 
 
-let%test "forwards exit code" =
+let%test "forwards exit code." =
   let (_out, _err,  exit_code) = Helpers.run_esy_bash "exit 15" in
   exit_code = 15
 
 
-let%test "--env: environment file" =
+let%test "--env: environment file." =
   let tempFilePath =
     Sys.getenv (if Sys.unix then "TMPDIR" else "TMP") ^
       "test-env.json" in
