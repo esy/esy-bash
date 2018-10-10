@@ -63,7 +63,20 @@ let extractEnvironmentVariables = environmentFile => {
 
 let nonce = ref(0);
 let bashExec = (~environmentFile=?, command) => {
-  let shellPath = Sys.unix ? "/bin/bash" : "C:\\cygwin\\bin\\bash.exe"; /* "..\\.cygwin\\bin.bash.exe"; */
+  let executablePath = Sys.executable_name;
+  let parent = Filename.dirname;
+  let cygwinBash = parent(
+    parent(
+      parent(
+        parent(
+          parent(
+            executablePath
+          )
+        )
+      )
+    )
+  ) ++ "\\.cygwin\\bin\\bash.exe";
+  let shellPath = Sys.unix ? "/bin/bash" : cygwinBash;
   nonce := nonce^ + 1;
   log(
     Printf.sprintf(

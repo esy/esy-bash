@@ -5,6 +5,7 @@
   "license": "MIT",
   "esy": {
     "build": "refmterr dune build -p #{self.name}",
+    "buildsInSource": "_build",
     "NOTE": "Optional release Section. Customizes result of `esy release`",
     "release": {
       "releasedBinaries": [

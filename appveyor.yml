@@ -8,7 +8,7 @@ install:
     # The x64 is required as a workaround for esy/esy#412
     - ps: Install-Product node 8 x64
     - npm install
-    - npm install -g esy@0.2.11
+    - npm install -g esy@next
     - cd re
     # Retry is necessary due to esy/esy#413 and esy/esy#414
     - appveyor-retry esy install
@@ -21,6 +21,7 @@ environment:
 
 build_script:
     - esy build
+    - set CYGWIN_PATH=%APPVEYOR_BUILD_FOLDER%\.cygwin
     - esy b dune runtest
     # - cd ..
     # - npm test
