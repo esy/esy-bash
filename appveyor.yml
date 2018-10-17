@@ -21,7 +21,6 @@ environment:
 
 build_script:
     - esy build
-    - set CYGWIN_PATH=%APPVEYOR_BUILD_FOLDER%\.cygwin
     - esy b dune runtest
     # - cd ..
     # - npm test
