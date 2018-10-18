@@ -80,7 +80,9 @@ const bashExec = (bashCommand, options) => {
         "CYGWIN": "winsymlinks:nativestrict",
     }
 
+    // Setting noacl so that cygwin won't tamper with win permissions.
     const bashCommandWithDirectoryPreamble = `
+        mount -c /cygdrive -o binary,noacl,posix=0,user
         # environment file: ${options.environmentFile}
         cd ${normalizePath(cwd)}
         ${bashCommand}
