@@ -65,17 +65,9 @@ let nonce = ref(0);
 let bashExec = (~environmentFile=?, command) => {
   let executablePath = Sys.executable_name;
   let parent = Filename.dirname;
-  let cygwinBash = parent(
-    parent(
-      parent(
-        parent(
-          parent(
-            executablePath
-          )
-        )
-      )
-    )
-  ) ++ "\\.cygwin\\bin\\bash.exe";
+  let cygwinBash =
+    parent(parent(parent(parent(parent(executablePath)))))
+    ++ "\\.cygwin\\bin\\bash.exe";
   let shellPath = Sys.unix ? "/bin/bash" : cygwinBash;
   nonce := nonce^ + 1;
   log(
@@ -96,7 +88,11 @@ let bashExec = (~environmentFile=?, command) => {
   let cygwinSymlinkVar = "CYGWIN=winsymlinks:nativestrict";
 
   let bashCommandWithDirectoryPreamble =
-    Printf.sprintf("cd %s;\n%s;", normalizePath(Sys.getcwd()), command);
+    Printf.sprintf(
+      "mount -c /cygdrive -o binary,noacl,posix=0,user; \ncd %s;\n%s;",
+      normalizePath(Sys.getcwd()),
+      command,
+    );
   let normalizedShellScript =
     normalizeEndlines(bashCommandWithDirectoryPreamble);
 
