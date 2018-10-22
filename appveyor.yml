@@ -18,7 +18,7 @@ install:
 # 'max-old-space-size' needs to be set for large NPM uploads,
 # otherwise node will crash with an out-of-memory error
 environment:
-  NODE_OPTIONS:--max-old-space-size=4096
+  NODE_OPTIONS:"--max-old-space-size=4096"
   NPM_TOKEN:
     secure: h3hweU1D+fx2hyHtCSUHVkR7pKf7XpCEwC0/E/a+7vxnus3hArWb4w0WjynzOPJ+
 
