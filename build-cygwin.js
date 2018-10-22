@@ -68,28 +68,6 @@ const install = async () => {
     })
 
     log(`Installation complete!`)
-
-    // Temporarily remove OPAM setting - 
-    // this should only be including in the `esy` bootstrapping.
-    // Long-term, we shouldn't actually need this, since `esy` can handle the install
-    // and loading the dependencies for us.
-
-    // log(`Setting up OPAM...`)
-    // const bashExecutablePath = path.join(destinationFolder, "bin", "bash.exe")
-    // const opamScriptPath = path.resolve(path.join(__dirname, "install-opam.sh"))
-
-    // cp.spawnSync(bashExecutablePath, [
-    //     "-l",
-    //     opamScriptPath,
-    // ], {
-    //     stdio: "inherit",
-    //     encoding: "utf-8",
-    //     env: {
-    //         ...process.env
-    //     }
-    // })
-
-    // log(`OPAM setup complete`)
 }
 
 if (os.platform() === "win32") {
