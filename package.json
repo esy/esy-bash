@@ -1,6 +1,6 @@
 {
   "name": "esy-bash-test",
-  "version": "0.1.24",
+  "version": "0.0.100",
   "description": "Cross-platform bash utilities - primed for Reason/OCaml",
   "main": "index.js",
   "bin": {
@@ -31,9 +31,9 @@
   "homepage": "https://github.com/bryphe/esy-cygwin#readme",
   "dependencies": {},
   "devDependencies": {
-    "jest": "^23.1.0",
-    "rimraf": "^2.6.2",
     "download": "^7.0.0",
-    "mkdirp": "^0.5.1"
+    "jest": "^23.1.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.2"
   }
 }
