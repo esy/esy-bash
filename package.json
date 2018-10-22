@@ -14,8 +14,7 @@
   ],
   "scripts": {
     "build-cygwin": "node build-cygwin.js",
-    "test": "jest",
-    "postinstall": "node postinstall.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -27,11 +26,11 @@
     "url": "https://github.com/bryphe/esy-cygwin/issues"
   },
   "homepage": "https://github.com/bryphe/esy-cygwin#readme",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "jest": "^23.1.0",
+    "rimraf": "^2.6.2",
     "download": "^7.0.0",
     "mkdirp": "^0.5.1"
-  },
-  "devDependencies": {
-    "jest": "^23.1.0"
   }
 }

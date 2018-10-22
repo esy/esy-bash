@@ -3,6 +3,7 @@ const path = require("path")
 const mkdirp = require("mkdirp")
 const download = require("download")
 const cp = require("child_process")
+const rimraf = require("rimraf");
 
 const log = (msg) => console.log(msg)
 
@@ -68,6 +69,14 @@ const install = async () => {
     })
 
     log(`Installation complete!`)
+
+    // Run a command to test it out & create initial script files
+    cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash.exe"), ["-c", "echo hi"]);
+
+    // Delete the /var/cache folder, since it's large and we don't need the cache at this point
+    console.log("Deleting /var/cache...");
+    rimraf.sync(path.join(__dirname, ".cygwin", "var", "cache"));
+    console.log("Deletion successful!");
 }
 
 if (os.platform() === "win32") {
