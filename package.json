@@ -10,7 +10,10 @@
     "node": ">=8.0"
   },
   "files": [
-    ".cygwin"
+    ".cygwin",
+    "re/_build/default",
+    "bash-exec.js",
+    "bin/esy-bash.js"
   ],
   "scripts": {
     "build-cygwin": "node build-cygwin.js",
