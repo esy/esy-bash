@@ -29,7 +29,11 @@ let remapPathsInEnvironment = envVars =>
       switch (String.split_on_char('=', envVar)) {
       | [k, v, ...rest] =>
         if (String.lowercase_ascii(k) == "path") {
-          "PATH=" ++ normalizePath(v);
+          "PATH="
+          ++ String.concat(
+               Sys.unix ? ":" : ";",
+               ["/usr/bin", "/usr/local/bin", normalizePath(v)],
+             );
         } else {
           k ++ "=" ++ v;
         }
@@ -100,26 +104,28 @@ let bashExec = (~environmentFile=?, command) => {
   Printf.fprintf(fileChannel, "%s", normalizedShellScript);
   close_out(fileChannel);
 
+  let existingVars = Unix.environment();
+  let vars =
+    remapPathsInEnvironment(
+      Array.append([|cygwinSymlinkVar|], existingVars),
+    );
   let run_shell =
     switch (environmentFile) {
     | Some(x) =>
-      let vars =
+      let varsFromFile =
         remapPathsInEnvironment(
-          Array.of_list([
-            cygwinSymlinkVar,
-            ...extractEnvironmentVariables(x),
-          ]),
+          Array.of_list(extractEnvironmentVariables(x)),
         );
-      let existingVars = Unix.environment();
       Unix.create_process_env(
         shellPath,
         [|Sys.unix ? "-c" : "-lc", tempFilePath|],
-        Array.append(existingVars, vars),
+        Array.append(existingVars, varsFromFile),
       );
     | None =>
-      Unix.create_process(
+      Unix.create_process_env(
         shellPath,
         [|Sys.unix ? "-c" : "-lc", tempFilePath|],
+        vars,
       )
     };
   let pid = run_shell(Unix.stdin, Unix.stdout, Unix.stderr);

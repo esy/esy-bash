@@ -26,7 +26,9 @@ let%test "--env: environment file." =
   exit_code = 0 && (Helpers.contains out "foovalue") = 0
 
 
-
+let%test "ls command" =
+  let (out, _err,  exit_code) = Helpers.run_esy_bash "ls" in
+  (Helpers.contains out "test_runner.exe") != -1 && exit_code = 0
 
 (* let%test "doesn't escape." = true (\* TODO *\)
  * let%test "can pass output to bash." = true (\* TODO *\)
