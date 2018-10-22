@@ -4,6 +4,7 @@ const mkdirp = require("mkdirp")
 const download = require("download")
 const cp = require("child_process")
 const rimraf = require("rimraf");
+const fs = require("fs-extra");
 
 const log = (msg) => console.log(msg)
 
@@ -77,6 +78,11 @@ const install = async () => {
     console.log("Deleting /var/cache...");
     rimraf.sync(path.join(__dirname, ".cygwin", "var", "cache"));
     console.log("Deletion successful!");
+
+    // Copy any overridden configuration scripts to the cygwin folder
+    console.log("Copying over defaults...");
+    fs.copySync(path.join(__dirname, "defaults"), path.join(__dirname, ".cygwin"));
+    console.log("Defaults copied successfully");
 }
 
 if (os.platform() === "win32") {
