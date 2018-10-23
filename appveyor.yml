@@ -9,6 +9,7 @@ install:
     # The x64 is required as a workaround for esy/esy#412
     - ps: Install-Product node 9 x64
     - npm install
+    - npm install -g yarn
     - npm install -g esy@next
     # Install cygwin
     - npm run build-cygwin
@@ -31,12 +32,15 @@ build_script:
 test: off
 
 deploy_script:
+  - npm --version
+  - yarn --version
   - echo Deploying...
   - ps: |
       if ($ENV:PLATFORM -eq "x64")
       {
         "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
-        iex "npm publish"
+        iex "npm pack"
+        iex "yarn publish esy-bash-0.2.0.tgz --new-version 0.2.0"
       }
     on:
       branches: master
