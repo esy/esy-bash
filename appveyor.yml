@@ -40,4 +40,4 @@ deploy_script:
         iex "npm publish"
       }
     on:
-      branches: next
+      branches: master
