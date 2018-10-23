@@ -39,8 +39,8 @@ deploy_script:
       if ($ENV:PLATFORM -eq "x64")
       {
         "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
-        iex "npm pack"
-        iex "yarn publish esy-bash-0.2.1.tgz --new-version 0.2.1"
+        iex "yarn pack"
+        iex "yarn publish esy-bash-v0.2.2.tgz --new-version 0.2.2"
       }
     on:
       branches: master
