@@ -9,9 +9,15 @@
   "engines": {
     "node": ">=8.0"
   },
+  "files": [
+    ".cygwin",
+    "re/_build/default/bin/EsyBash.exe",
+    "bash-exec.js",
+    "bin/esy-bash.js"
+  ],
   "scripts": {
-    "test": "jest",
-    "postinstall": "node postinstall.js"
+    "build-cygwin": "node build-cygwin.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -23,11 +29,12 @@
     "url": "https://github.com/bryphe/esy-cygwin/issues"
   },
   "homepage": "https://github.com/bryphe/esy-cygwin#readme",
-  "dependencies": {
-    "download": "^7.0.0",
-    "mkdirp": "^0.5.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "jest": "^23.1.0"
+    "download": "^7.0.0",
+    "fs-extra": "^7.0.0",
+    "jest": "^23.1.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.2"
   }
 }

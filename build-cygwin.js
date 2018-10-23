@@ -3,6 +3,8 @@ const path = require("path")
 const mkdirp = require("mkdirp")
 const download = require("download")
 const cp = require("child_process")
+const rimraf = require("rimraf");
+const fs = require("fs-extra");
 
 const log = (msg) => console.log(msg)
 
@@ -69,27 +71,18 @@ const install = async () => {
 
     log(`Installation complete!`)
 
-    // Temporarily remove OPAM setting - 
-    // this should only be including in the `esy` bootstrapping.
-    // Long-term, we shouldn't actually need this, since `esy` can handle the install
-    // and loading the dependencies for us.
+    // Run a command to test it out & create initial script files
+    cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash.exe"), ["-c", "echo hi"]);
 
-    // log(`Setting up OPAM...`)
-    // const bashExecutablePath = path.join(destinationFolder, "bin", "bash.exe")
-    // const opamScriptPath = path.resolve(path.join(__dirname, "install-opam.sh"))
+    // Delete the /var/cache folder, since it's large and we don't need the cache at this point
+    console.log("Deleting /var/cache...");
+    rimraf.sync(path.join(__dirname, ".cygwin", "var", "cache"));
+    console.log("Deletion successful!");
 
-    // cp.spawnSync(bashExecutablePath, [
-    //     "-l",
-    //     opamScriptPath,
-    // ], {
-    //     stdio: "inherit",
-    //     encoding: "utf-8",
-    //     env: {
-    //         ...process.env
-    //     }
-    // })
-
-    // log(`OPAM setup complete`)
+    // Copy any overridden configuration scripts to the cygwin folder
+    console.log("Copying over defaults...");
+    fs.copySync(path.join(__dirname, "defaults"), path.join(__dirname, ".cygwin"));
+    console.log("Defaults copied successfully");
 }
 
 if (os.platform() === "win32") {
