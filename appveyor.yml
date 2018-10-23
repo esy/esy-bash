@@ -2,7 +2,8 @@ platform:
     - x64
 
 cache:
-    - C:\Users\appveyor\.esy
+    - C:\Users\appveyor\.esy\3_\i
+    - C:\Users\appveyor\.esy\source-tarballs
 
 install:
     # The x64 is required as a workaround for esy/esy#412
@@ -25,12 +26,11 @@ environment:
 build_script:
     - esy build
     - esy b dune runtest
-    # - cd ..
-    # - npm test
-    
+
 test: off
 
 deploy_script:
+  - echo Deploying...
   - ps: |
       if ($ENV:PLATFORM -eq "x64")
       {
@@ -39,4 +39,4 @@ deploy_script:
         iex "npm publish"
       }
     on:
-      branches: next
+      branches: master
