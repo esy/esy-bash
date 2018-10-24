@@ -26,14 +26,15 @@ environment:
   NPM_TOKEN:
     secure: h3hweU1D+fx2hyHtCSUHVkR7pKf7XpCEwC0/E/a+7vxnus3hArWb4w0WjynzOPJ+
 
-artifacts:
-    - path: '*.tgz'
-      name: NPM Package
-
 build_script:
     - esy build
     - esy b dune runtest
     - cd ..
+    - yarn pack
+
+artifacts:
+    - path: '*.tgz'
+      name: NPM Package
 
 test: off
 
@@ -45,7 +46,6 @@ deploy_script:
       if ($ENV:PLATFORM -eq "x64")
       {
         "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
-        iex "yarn pack"
         iex "yarn publish esy-bash-v0.2.2.tgz --new-version 0.2.2 --verbose"
       }
     on:
