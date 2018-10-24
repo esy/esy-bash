@@ -7,7 +7,7 @@ cache:
 
 install:
     # The x64 is required as a workaround for esy/esy#412
-    - ps: Install-Product node 9 x64
+    - ps: Install-Product node 10 x64
     # Get latest npm
     - npm install -g npm
     - npm install
@@ -22,7 +22,7 @@ install:
 # 'max-old-space-size' needs to be set for large NPM uploads,
 # otherwise node will crash with an out-of-memory error
 environment:
-  NODE_OPTIONS: --max-old-space-size=4096
+  NODE_OPTIONS: --max-old-space-size=8192
   NPM_TOKEN:
     secure: h3hweU1D+fx2hyHtCSUHVkR7pKf7XpCEwC0/E/a+7vxnus3hArWb4w0WjynzOPJ+
 
@@ -42,7 +42,7 @@ deploy_script:
       {
         "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
         iex "yarn pack"
-        iex "npm publish esy-bash-v0.2.2.tgz --verbose"
+        iex "yarn publish esy-bash-v0.2.2.tgz --verbose"
       }
     on:
       branches: master
