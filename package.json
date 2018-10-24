@@ -13,7 +13,8 @@
     ".cygwin",
     "re/_build/default/bin/EsyBash.exe",
     "bash-exec.js",
-    "bin/esy-bash.js"
+    "bin/esy-bash.js",
+    "scripts"
   ],
   "scripts": {
     "build-cygwin": "node build-cygwin.js",
