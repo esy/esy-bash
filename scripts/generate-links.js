@@ -48,7 +48,7 @@ const getAllHardLinks = async (folder, curr) => {
 
 const generateLinksJson = () => {
     let ret = {};
-    getAllHardLinks("E:/esy-bash/.cygwin", ret);
+    getAllHardLinks(path.join(__dirname, "..", ".cygwin"), ret);
     fs.writeFileSync(path.join(__dirname, "..", ".cygwin", "links.json"), JSON.stringify(ret));
 };
 
