@@ -1,6 +1,6 @@
 {
   "name": "esy-bash",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Cross-platform bash utilities - primed for Reason/OCaml",
   "main": "index.js",
   "bin": {
@@ -13,10 +13,14 @@
     ".cygwin",
     "re/_build/default/bin/EsyBash.exe",
     "bash-exec.js",
-    "bin/esy-bash.js"
+    "postinstall.js",
+    "bin/esy-bash.js",
+    "scripts"
   ],
   "scripts": {
     "build-cygwin": "node build-cygwin.js",
+    "package-cygwin": "node package-cygwin.js",
+    "postinstall": "node postinstall.js",
     "test": "jest"
   },
   "repository": {
