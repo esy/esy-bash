@@ -42,7 +42,7 @@ deploy_script:
       {
         "//registry.npmjs.org/:_authToken=`$`{NPM_TOKEN`}" | Out-File (Join-Path $ENV:APPVEYOR_BUILD_FOLDER ".npmrc") -Encoding UTF8
         iex "yarn pack"
-        iex "yarn publish esy-bash-v0.2.2.tgz --verbose"
+        iex "yarn publish esy-bash-v0.2.2.tgz --new-version 0.2.2 --verbose"
       }
     on:
       branches: master
