@@ -50,6 +50,16 @@ const consolidateLinks = () => {
     });
 }
 
+const ensureFolder = (p) => {
+    if (fs.existsSync(p)) {
+        return;
+    }
+
+    ensureFolder(path.dirname(p));
+
+    fs.mkdirSync(p);
+};
+
 const restoreLinks = () => {
     // Take links as input, and:
     // Create hardlinks from the '_links' folder to all the relevant binaries
@@ -63,6 +73,7 @@ const restoreLinks = () => {
 
         l.forEach((file) => {
             const dst = path.join(cygwinFolder, file.trim());
+            ensureFolder(path.dirname(dst));
 
             if (fs.existsSync(dst)) {
                 console.warn("Warning - file already exists: " + dst);
