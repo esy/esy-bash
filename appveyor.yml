@@ -8,6 +8,8 @@ cache:
 install:
     # The x64 is required as a workaround for esy/esy#412
     - ps: Install-Product node 9 x64
+    # Get latest npm
+    - npm install -g npm
     - npm install
     - npm install -g yarn
     - npm install -g esy@next
