@@ -23,8 +23,6 @@ const convertCygwinPathToRelativePath = (p, curr) => {
     return convertCygwinPathToRelativePath(path.dirname(p), currentDirectory + "/" + curr);
 };
 
-console.log(convertCygwinPathToRelativePath("\\esy-bash\\.cygwin\\bin\\2\\3", "x86_64-w64-mingw32-gcc.exe"));
-
 const getHardLinksForFile = (filePath) => {
     let output = cp.execSync("fsutil hardlink list " + filePath).toString().trim();
 
@@ -48,11 +46,12 @@ const getAllHardLinks = async (folder, curr) => {
     }
 };
 
-const v = getHardLinksForFile("E:/esy-bash/.cygwin/bin/x86_64-w64-mingw32-gcc.exe");
-console.dir(v);
+const generateLinksJson = () => {
+    let ret = {};
+    getAllHardLinks("E:/esy-bash/.cygwin", ret);
+    fs.writeFileSync(path.join(__dirname, "..", ".cygwin", "links.json"), JSON.stringify(ret));
+};
 
-let ret = {};
-getAllHardLinks("E:/esy-bash/.cygwin", ret);
-console.dir(ret);
-
-fs.writeFileSync(path.join(__dirname, "..", ".cygwin", "links.json"), JSON.stringify(ret));
+module.exports = {
+    generateLinksJson
+};

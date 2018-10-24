@@ -73,5 +73,7 @@ const restoreLinks = () => {
     });
 }
 
-consolidateLinks();
-// restoreLinks();
+module.exports = {
+    consolidateLinks,
+    restoreLinks
+};

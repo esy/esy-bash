@@ -8,6 +8,9 @@ const fs = require("fs-extra");
 
 const log = (msg) => console.log(msg)
 
+const { generateLinksJson } = require("./scripts/generate-links");
+const { consolidateLinks } = require("./scripts/consolidate-links");
+
 const install = async () => {
     // Several of these constants are borrowed from:
     // https://github.com/ocaml/ocaml-ci-scripts/blob/master/appveyor-install.ps1
@@ -81,6 +84,12 @@ const install = async () => {
     console.log("Copying over defaults...");
     fs.copySync(path.join(__dirname, "defaults"), path.join(__dirname, ".cygwin"));
     console.log("Defaults copied successfully");
+
+    // Generate a links.json file, so we know how to restore the hardlinks on unpack
+    generateLinksJson();
+
+    // Consolidate the links, so we don't pack a bunch of duplicate files!
+    consolidateLinks();
 }
 
 if (os.platform() === "win32") {
