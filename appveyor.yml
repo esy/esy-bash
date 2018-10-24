@@ -30,11 +30,6 @@ build_script:
     - esy build
     - esy b dune runtest
     - cd ..
-    - yarn pack
-
-artifacts:
-    - path: '*.tgz'
-      name: NPM Package
 
 test: off
 
