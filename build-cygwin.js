@@ -32,8 +32,6 @@ const install = async () => {
         "m4",
         "make",
         "patch",
-        "perl",
-        "rsync",
         "unzip",
 
         // Needed for installing the cygwin-build of OCaml
