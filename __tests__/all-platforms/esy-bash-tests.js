@@ -7,12 +7,14 @@ const { bashExec, toCygwinPath } = require("./../../index")
 
 const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 
+const binPath = path.join(__dirname, "..", "..", "re", "_build", "default", "bin", "EsyBash.exe");
+
 const esyBashRun = async (script, envFilePath) => {
     console.log(`esy-bash: ${script}`)
 
-    const args = envFilePath ? [bashPath, "--env", envFilePath, script] : [bashPath, script]
+    const args = envFilePath ? ["--env", envFilePath, script] : [bashPath, script]
 
-    const output = cp.spawnSync("node", args)
+    const output = cp.spawnSync(binPath, args)
     console.log(` - command returned with status: ${output.status}`)
 
     console.log(` stdout: ${output.stdout}`)
@@ -86,7 +88,7 @@ describe("cwd parameter", () => {
 describe("arguments", () => {
     it("respects arguments passed in", async () => {
 
-        const result = cp.spawnSync("node", [bashPath, "sh", "-c", "(echo Hello || true)"])
+        const result = cp.spawnSync(binPath, ["sh", "-c", "(echo Hello || true)"])
 
         expect(result.status).toEqual(0)
         expect(result.stdout.indexOf("Hello")).toBeGreaterThanOrEqual(0)
