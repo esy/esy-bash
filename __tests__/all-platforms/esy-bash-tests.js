@@ -10,9 +10,10 @@ const bashPath = path.join(__dirname, "..", "..", "bin", "esy-bash.js")
 const binPath = path.join(__dirname, "..", "..", "re", "_build", "default", "bin", "EsyBash.exe");
 
 const esyBashRun = async (script, envFilePath) => {
+    console.log("BIN PATH: " + binPath);
     console.log(`esy-bash: ${script}`)
 
-    const args = envFilePath ? ["--env", envFilePath, script] : [bashPath, script]
+    const args = envFilePath ? ["--env", envFilePath, script] : [script]
 
     const output = cp.spawnSync(binPath, args)
     console.log(` - command returned with status: ${output.status}`)
@@ -96,7 +97,7 @@ describe("arguments", () => {
     })
 })
 
-describe("symlinks", () => {
+describe.only("symlinks", () => {
     it("create and read from symlink", async () => {
         const tempDirectoryPath = getTempDirectory()
         fs.mkdirSync(tempDirectoryPath)
