@@ -97,7 +97,7 @@ describe("arguments", () => {
     })
 })
 
-describe.only("symlinks", () => {
+describe("symlinks", () => {
     it("create and read from symlink", async () => {
         const tempDirectoryPath = getTempDirectory()
         fs.mkdirSync(tempDirectoryPath)
