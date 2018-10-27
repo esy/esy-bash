@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Reason workflow with Esy",
   "license": "MIT",
+  "files": [
+    "_build/default/bin/EsyBash.exe"
+  ],
   "esy": {
     "build": "refmterr dune build -p #{self.name}",
     "buildsInSource": "_build",

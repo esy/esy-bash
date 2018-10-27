@@ -30,6 +30,7 @@ build_script:
     - esy build
     - esy b dune runtest
     - cd ..
+    - npm run test
     - npm run package-cygwin
 
 test: off
