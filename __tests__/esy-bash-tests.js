@@ -13,16 +13,26 @@ let invocations = [
     { tool: binPath, args: []}
 ];
 
+let idx = 0;
+const getTempDirectory = () => {
+    idx++;
+    const testDirectoryName = "test-directory-" + "__" + idx.toString() + "__" + new Date().getTime().toString()
+    return path.join(os.tmpdir(), testDirectoryName)
+}
+
 invocations.forEach((invocation) => {
     const description = `Testing with: ${invocation.tool} ${invocation.args.join(" ")}`
     describe(description, () => {
-        const esyBashRun = async (script, envFilePath) => {
+        const esyBashRun = async (script, envFilePath, cwd) => {
             // console.log("BIN PATH: " + binPath);
             // console.log(`esy-bash: ${script}`)
 
+
+            cwd = cwd || process.cwd();
             const args = envFilePath ? ["--env", envFilePath, script] : [script]
 
-            const output = cp.spawnSync(invocation.tool, [...invocation.args, ...args])
+            // console.log("Using cwd: " + cwd);
+            const output = cp.spawnSync(invocation.tool, [...invocation.args, ...args], { cwd });
             // console.log(` - command returned with status: ${output.status}`)
 
             // console.log(` stdout: ${output.stdout}`)
@@ -33,11 +43,6 @@ invocations.forEach((invocation) => {
                 stdout: output.stdout.toString("utf8"),
                 stderr: output.stderr.toString("utf8"),
             }
-        }
-
-        const getTempDirectory = () => {
-            const testDirectoryName = "test-directory-" + new Date().getTime().toString()
-            return path.join(os.tmpdir(), testDirectoryName)
         }
 
         it("can pass basic statement to bash", async () => {
@@ -137,5 +142,28 @@ invocations.forEach((invocation) => {
                 expect(destFileContents).toEqual("test file")
             })
         })
+
+        describe("tar", () => {
+            it("can create / unpack a tarball", async () => {
+                const srcDirectory = getTempDirectory();
+                fs.mkdirSync(srcDirectory);
+
+                const testFile = path.join(srcDirectory, "test.txt");
+                fs.writeFileSync(testFile, "hello world", "utf8");
+
+                let output = await esyBashRun(`tar cvf test.tgz test.txt`, null, srcDirectory);
+                console.dir(output);
+                expect(output.status).toEqual(0);
+                expect(fs.existsSync(path.join(srcDirectory, "test.tgz"))).toBe(true);
+
+                const destDirectory = getTempDirectory();
+                fs.mkdirSync(destDirectory);
+
+                output = await esyBashRun(`tar -xf test.tgz -C ${toCygwinPath(destDirectory)}`, null, srcDirectory);
+                console.dir(output);
+                expect(output.status).toEqual(0);
+                expect(fs.existsSync(path.join(destDirectory, "test.txt"))).toBe(true);
+            });
+        });
     })
 });
