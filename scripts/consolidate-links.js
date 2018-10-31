@@ -102,7 +102,7 @@ const restoreLinks = () => {
         const orig = path.join(cygwinFolder, symlinks[key]);
 
         if (!fs.existsSync(orig)) {
-            console.warn("Cannot found original path: " + orig + ", skipping symlink.");
+            console.warn("Cannot find original path, skipping symlink: " + link);
             return;
         }
 
