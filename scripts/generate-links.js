@@ -60,11 +60,6 @@ const isSymlink = (filePath) => {
         return false;
     }
 
-    // Only check etc files for now...
-    if (filePath.indexOf("etc") === -1) {
-        return false;
-    }
-
     console.log("Checking symlink: " + filePath);
     let isSymlink = true;
     try {
