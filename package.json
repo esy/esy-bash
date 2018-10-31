@@ -1,5 +1,5 @@
 {
-  "name": "@bryphe/esy-bash",
+  "name": "esy-bash",
   "version": "0.3.3",
   "description": "Cross-platform bash utilities - primed for Reason/OCaml",
   "main": "index.js",
