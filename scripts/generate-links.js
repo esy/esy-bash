@@ -77,13 +77,12 @@ const isSymlink = (filePath) => {
     return isSymlink;
 };
 
-// If it's not a native symlink, it must be a cygwin-style symlink
+// Helper method to get the symlink contents from a cygwin symlink file
 const extractSymlinkFromPath = (filePath) => {
     let result = bashExec(`readlink ${cygPath(filePath)}`)
 
     return result.trim();
 };
-
 
 const getAllHardLinks = async (folder, curr) => {
     console.log("-checking: " + folder);
