@@ -46,7 +46,7 @@ const consolidateLinks = () => {
         console.log("Dest folder: " + dst);
 
         try {
-        fs.copyFileSync(src, dst);
+            fs.copyFileSync(src, dst);
         } catch (ex) {
             console.error(ex);
             exit(1);
