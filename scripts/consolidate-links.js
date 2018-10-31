@@ -22,7 +22,19 @@ const consolidateLinks = () => {
         fs.mkdirSync(path.join(cygwinFolder, "_links"));
     }
 
-    const links = readLinks();
+    const deleteFile = (file) => {
+        const fileToDelete = path.join(cygwinFolder, path.normalize(file.trim()));
+        console.log(`Deleting: ${fileToDelete}`);
+        if (!fs.existsSync(fileToDelete)) {
+            console.warn("- Not present: " + fileToDelete);
+        } else {
+            fs.unlinkSync(fileToDelete);
+        }
+    }
+
+    const allLinks = readLinks();
+    const links = allLinks.hardlinks;
+    // Consolidate hard links
     Object.keys(links).forEach((key) => {
         const l = links[key];
 
@@ -39,14 +51,14 @@ const consolidateLinks = () => {
         }
 
         l.forEach((file) => {
-            const fileToDelete = path.join(cygwinFolder, path.normalize(file.trim()));
-            console.log(`Deleting: ${fileToDelete}`);
-            if (!fs.existsSync(fileToDelete)) {
-                console.warn("- Not present: " + fileToDelete);
-            } else {
-                fs.unlinkSync(fileToDelete);
-            }
+            deleteFile(file);
         })
+    });
+
+    // Remove symlink files
+    const symlinks = allLinks.symlinks;
+    Object.keys(symlinks).forEach((key) => {
+        deleteFile(key);
     });
 }
 

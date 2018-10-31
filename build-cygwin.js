@@ -63,6 +63,12 @@ const install = async () => {
         "-P",
         packagesToInstall.join(",") 
     ], {
+        env: {
+            ...process.env,
+            // Try native instead of nativestrict:
+            // https://stackoverflow.com/questions/24222591/check-the-difference-of-symlink-type-in-cygwin?rq=1
+            "CYGWIN": "winsymlinks:native"
+        },
         stdio: [process.stdin, process.stdout, process.stderr],
         encoding: "utf-8",
     })

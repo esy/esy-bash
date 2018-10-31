@@ -30,6 +30,61 @@ const getHardLinksForFile = (filePath) => {
     return lines;
 };
 
+const cygwinPath = path.join(__dirname, "..", ".cygwin");
+const bashCommand = path.join(cygwinPath, "bin", "bash.exe");
+const bashExec = (command) => {
+    let output = cp.execSync(`${bashCommand} -lc "${command}"`);
+    return output.toString().trim();
+};
+
+const cygPath = (p) => {
+    p = p.split("\\").join("/")
+    let ret = bashExec(`cygpath -u ${p}`);
+    return ret;
+};
+
+const extensionsToIgnore = [
+    ".exe",
+    ".dll",
+    ".sh",
+    ".h",
+    ".hpp",
+    ".db",
+    ".gz"
+];
+
+const isSymlink = (filePath) => {
+    // Speed up check by only looking for symlinks with a whitelisted extension
+    let shouldIgnore = extensionsToIgnore.reduce((prev, curr) => prev || filePath.endsWith(curr), false);
+    if (shouldIgnore) {
+        return false;
+    }
+
+    // Only check etc files for now...
+    if (filePath.indexOf("etc") === -1) {
+        return false;
+    }
+
+    console.log("Checking symlink: " + filePath);
+    let isSymlink = true;
+    try {
+       let ret = bashExec("test -L " + cygPath(filePath));
+       console.log("SYMLINK! " + filePath);
+    } catch (ex) {
+        isSymlink = false;
+    }
+
+    return isSymlink;
+};
+
+// If it's not a native symlink, it must be a cygwin-style symlink
+const extractSymlinkFromPath = (filePath) => {
+    let result = bashExec(`readlink ${cygPath(filePath)}`)
+
+    return result.trim();
+};
+
+
 const getAllHardLinks = async (folder, curr) => {
     console.log("-checking: " + folder);
     const stats = fs.statSync(folder);
@@ -40,16 +95,23 @@ const getAllHardLinks = async (folder, curr) => {
     } else {
         const hardLinks = getHardLinksForFile(folder);
         if(hardLinks.length > 1) { 
-            console.log(" -- found hardlink!");
-            curr[hardLinks[0]] = hardLinks;
+            console.log(" -- found hardlink: " + folder);
+            curr.hardlinks[hardLinks[0]] = hardLinks;
+        } else if(isSymlink(folder)) {
+            let relativePath = convertCygwinPathToRelativePath(path.dirname(folder), path.basename(folder))
+            console.log(" -- found symlink: " + relativePath);
+            curr.symlinks["/" + relativePath] = extractSymlinkFromPath(folder);
         }
     }
 };
 
-const generateLinksJson = () => {
-    let ret = {};
-    getAllHardLinks(path.join(__dirname, "..", ".cygwin"), ret);
-    fs.writeFileSync(path.join(__dirname, "..", ".cygwin", "links.json"), JSON.stringify(ret));
+const generateLinksJson = (p) => {
+    let ret = {
+        hardlinks: {},
+        symlinks: {},
+    };
+    getAllHardLinks(p, ret);
+    fs.writeFileSync(path.join(p, "links.json"), JSON.stringify(ret));
 };
 
 module.exports = {
