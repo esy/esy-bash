@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
+const cp = require("child_process");
 
+const {bashExec, toCygwinPath} = require("./../bash-exec");
 
 const cygwinFolder = path.join(__dirname, "..", ".cygwin");
 
@@ -74,7 +76,7 @@ const restoreLinks = () => {
 
     // Hydrate hard links
     console.log("Hydrating hardlinks...");
-    const hardLinks = allLinks.hardlinks;
+    const links = allLinks.hardlinks;
     Object.keys(links).forEach((key) => {
         const l = links[key];
 
@@ -104,11 +106,16 @@ const restoreLinks = () => {
             return;
         }
 
-        if (fs.existsSync(dst)) {
-            fs.unlinkSync("Removing existing file at: " + dst);
+        if (fs.existsSync(link)) {
+            console.warn("Removing existing file at: " + link);
+            fs.unlinkSync(link);
         }
 
-        fs.linkSync(src, dst);
+        console.log(`Linking ${link} to ${orig}`)
+        const cygLink = toCygwinPath(link);
+        const cygOrig = toCygwinPath(orig);
+        let result = cp.spawnSync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]).stdout.toString("utf8");
+        console.dir(result);
     });
 
     console.log("Links successfully restored.");
