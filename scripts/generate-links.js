@@ -50,13 +50,20 @@ const extensionsToIgnore = [
     ".h",
     ".hpp",
     ".db",
-    ".gz"
+    ".gz",
+    ".c",
+    ".a"
 ];
 
 const isSymlink = (filePath) => {
     // Speed up check by only looking for symlinks with a whitelisted extension
     let shouldIgnore = extensionsToIgnore.reduce((prev, curr) => prev || filePath.endsWith(curr), false);
     if (shouldIgnore) {
+        return false;
+    }
+
+    // HACK: Skip non-ssl and non-etc paths to speed this up...
+    if (filePath.indexOf("ssl") === -1 || filePath.indexOf("etc") === -1) {
         return false;
     }
 
