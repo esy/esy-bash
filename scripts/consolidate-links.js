@@ -114,8 +114,7 @@ const restoreLinks = () => {
         console.log(`Linking ${link} to ${orig}`)
         const cygLink = toCygwinPath(link);
         const cygOrig = toCygwinPath(orig);
-        let result = cp.spawnSync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]).stdout.toString("utf8");
-        console.dir(result);
+        cp.spawnSync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
     console.log("Links successfully restored.");
