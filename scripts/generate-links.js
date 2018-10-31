@@ -63,7 +63,7 @@ const isSymlink = (filePath) => {
     }
 
     // HACK: Skip non-ssl and non-etc paths to speed this up...
-    if (filePath.indexOf("ssl") === -1 || filePath.indexOf("etc") === -1) {
+    if (filePath.indexOf("ssl") === -1 && filePath.indexOf("etc") === -1) {
         return false;
     }
 
