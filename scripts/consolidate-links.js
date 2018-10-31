@@ -54,12 +54,6 @@ const consolidateLinks = () => {
             deleteFile(file);
         })
     });
-
-    // Remove symlink files
-    const symlinks = allLinks.symlinks;
-    Object.keys(symlinks).forEach((key) => {
-        deleteFile(key);
-    });
 }
 
 const ensureFolder = (p) => {
@@ -76,8 +70,11 @@ const restoreLinks = () => {
     // Take links as input, and:
     // Create hardlinks from the '_links' folder to all the relevant binaries
 
-    const links = readLinks();
+    const allLinks = readLinks();
 
+    // Hydrate hard links
+    console.log("Hydrating hardlinks...");
+    const hardLinks = allLinks.hardlinks;
     Object.keys(links).forEach((key) => {
         const l = links[key];
 
@@ -94,6 +91,27 @@ const restoreLinks = () => {
             }
         })
     });
+
+    // Hydrate symlinks
+    console.log("Hydrating symlinks...");
+    const symlinks = allLinks.symlinks;
+    Object.keys(symlinks).forEach((key) => {
+        const link = path.join(cygwinFolder, key);
+        const orig = path.join(cygwinFolder, symlinks[key]);
+
+        if (!fs.existsSync(orig)) {
+            console.warn("Cannot found original path: " + orig + ", skipping symlink.");
+            return;
+        }
+
+        if (fs.existsSync(dst)) {
+            fs.unlinkSync("Removing existing file at: " + dst);
+        }
+
+        fs.linkSync(src, dst);
+    });
+
+    console.log("Links successfully restored.");
 }
 
 module.exports = {
