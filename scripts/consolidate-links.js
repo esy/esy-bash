@@ -99,7 +99,14 @@ const restoreLinks = () => {
     const symlinks = allLinks.symlinks;
     Object.keys(symlinks).forEach((key) => {
         const link = path.join(cygwinFolder, key);
-        const orig = path.join(cygwinFolder, symlinks[key]);
+
+        let orig = path.join(cygwinFolder, symlinks[key]);
+
+        // If the key points to an absolute path, use that.
+        // Otherwise, it's relative to the link, so append the path.
+        if (orig[0] !== '/') { 
+            orig = path.dirname(link) + "/" + symlinks[key];
+        }
 
         if (!fs.existsSync(orig)) {
             console.warn("Cannot find original path, skipping symlink: " + link);
