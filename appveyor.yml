@@ -32,6 +32,12 @@ build_script:
     - cd ..
     - npm run test
     - npm run package-cygwin
+    # Package, and then run the tests again w/ our bundled artifacts
+    # This catches bugs with our symlink/hardlink restoration
+    # - npm pack
+    # - node postinstall.js
+    # - npm run test
+    # - rimraf *.tgz
 
 test: off
 
