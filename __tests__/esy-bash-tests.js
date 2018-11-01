@@ -166,12 +166,19 @@ invocations.forEach((invocation) => {
             });
         });
 
-    describe("awk", () => {
-        it("can run awk", async () => {
-            const output = await esyBashRun(`awk --version`);
-            console.dir(output);
-            expect(output.status).toEqual(0);
-        });
-    });
-    });
+      describe("awk", () => {
+          it("can run awk", async () => {
+              const output = await esyBashRun(`awk --version`);
+              expect(output.status).toEqual(0);
+          });
+      });
+
+      describe("git", () => {
+          it("can run git w/ https", async () => {
+              const output = await esyBashRun(`git ls-remote https://github.com/yarnpkg/example-yarn-package.git`);
+              console.dir(output);
+              expect(output.status).toEqual(0);
+          });
+      });
+   });
 });
