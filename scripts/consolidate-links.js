@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
+const cp = require("child_process");
 
+const {bashExec, toCygwinPath} = require("./../bash-exec");
 
 const cygwinFolder = path.join(__dirname, "..", ".cygwin");
 
@@ -22,7 +24,19 @@ const consolidateLinks = () => {
         fs.mkdirSync(path.join(cygwinFolder, "_links"));
     }
 
-    const links = readLinks();
+    const deleteFile = (file) => {
+        const fileToDelete = path.join(cygwinFolder, path.normalize(file.trim()));
+        console.log(`Deleting: ${fileToDelete}`);
+        if (!fs.existsSync(fileToDelete)) {
+            console.warn("- Not present: " + fileToDelete);
+        } else {
+            fs.unlinkSync(fileToDelete);
+        }
+    }
+
+    const allLinks = readLinks();
+    const links = allLinks.hardlinks;
+    // Consolidate hard links
     Object.keys(links).forEach((key) => {
         const l = links[key];
 
@@ -32,20 +46,14 @@ const consolidateLinks = () => {
         console.log("Dest folder: " + dst);
 
         try {
-        fs.copyFileSync(src, dst);
+            fs.copyFileSync(src, dst);
         } catch (ex) {
             console.error(ex);
             exit(1);
         }
 
         l.forEach((file) => {
-            const fileToDelete = path.join(cygwinFolder, path.normalize(file.trim()));
-            console.log(`Deleting: ${fileToDelete}`);
-            if (!fs.existsSync(fileToDelete)) {
-                console.warn("- Not present: " + fileToDelete);
-            } else {
-                fs.unlinkSync(fileToDelete);
-            }
+            deleteFile(file);
         })
     });
 }
@@ -64,8 +72,11 @@ const restoreLinks = () => {
     // Take links as input, and:
     // Create hardlinks from the '_links' folder to all the relevant binaries
 
-    const links = readLinks();
+    const allLinks = readLinks();
 
+    // Hydrate hard links
+    console.log("Hydrating hardlinks...");
+    const links = allLinks.hardlinks;
     Object.keys(links).forEach((key) => {
         const l = links[key];
 
@@ -82,6 +93,31 @@ const restoreLinks = () => {
             }
         })
     });
+
+    // Hydrate symlinks
+    console.log("Hydrating symlinks...");
+    const symlinks = allLinks.symlinks;
+    Object.keys(symlinks).forEach((key) => {
+        const link = path.join(cygwinFolder, key);
+        const orig = path.join(cygwinFolder, symlinks[key]);
+
+        if (!fs.existsSync(orig)) {
+            console.warn("Cannot find original path, skipping symlink: " + link);
+            return;
+        }
+
+        if (fs.existsSync(link)) {
+            console.warn("Removing existing file at: " + link);
+            fs.unlinkSync(link);
+        }
+
+        console.log(`Linking ${link} to ${orig}`)
+        const cygLink = toCygwinPath(link);
+        const cygOrig = toCygwinPath(orig);
+        cp.spawnSync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
+    });
+
+    console.log("Links successfully restored.");
 }
 
 module.exports = {

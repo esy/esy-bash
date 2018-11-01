@@ -1,6 +1,6 @@
 {
   "name": "esy-bash",
-  "version": "0.3.1",
+  "version": "0.3.6",
   "description": "Cross-platform bash utilities - primed for Reason/OCaml",
   "main": "index.js",
   "bin": {
