@@ -69,9 +69,6 @@ const install = async () => {
 
     log(`Installation complete!`)
 
-    // Run a command to test it out & create initial script files
-    cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash.exe"), ["-c", "echo hi"]);
-
     // Delete the /var/cache folder, since it's large and we don't need the cache at this point
     console.log("Deleting /var/cache...");
     rimraf.sync(path.join(__dirname, ".cygwin", "var", "cache"));
@@ -81,6 +78,20 @@ const install = async () => {
     console.log("Copying over defaults...");
     fs.copySync(path.join(__dirname, "defaults"), path.join(__dirname, ".cygwin"));
     console.log("Defaults copied successfully");
+
+    // Explicitly set home directory
+    try {
+        fs.appendFileSync(
+            path.join(__dirname, ".cygwin", "etc", "nsswitch.conf"),
+            "db_home: /usr/esy"
+        );
+    } catch(e) {
+        console.error("Something went wrong while updating nsswitch.conf");
+    }
+
+    // Run a command to test it out & create initial script files
+    cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash.exe"), ["-c", "echo hi"]);
+
 }
 
 if (os.platform() === "win32") {
