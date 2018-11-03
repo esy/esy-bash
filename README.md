@@ -44,6 +44,6 @@ await bashExec("ls -a")
 
 This source code is licensed under the [MIT License](./LICENSE).
 
-When installing, several other dependencies are downloaded - like Cygwin and the GNU utilities. These are bound by their own license terms.
+When installing, several other dependencies are downloaded - like Cygwin and the GNU utilities. These are bound by their own license terms, primarily the [GPL License](https://en.wikipedia.org/wiki/GNU_General_Public_License)
 
 
