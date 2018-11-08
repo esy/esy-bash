@@ -16,3 +16,8 @@ if (!fs.existsSync(path.join(__dirname, ".cygwin"))) {
 console.log("Restoring hardlinks...");
 restoreLinks();
 console.log("Complete!");
+
+process.on('unhandledRejection', (err) => {
+    console.log("unhandledRejection", err.message);
+    process.exit(1);
+})

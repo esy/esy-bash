@@ -4,6 +4,7 @@ const cp = require("child_process");
 
 const promisify = require("util").promisify;
 
+const existsAsync = promisify(fs.exists);
 const spawnAsync = promisify(cp.spawn);
 const mkdirAsync = promisify(fs.mkdir);
 const linkAsync = promisify(fs.link);
@@ -13,6 +14,7 @@ const copyFileAsync = promisify(fs.copyFile);
 const {bashExec, toCygwinPath} = require("./../bash-exec");
 
 const cygwinFolder = path.join(__dirname, "..", ".cygwin");
+const linksFolder = path.join(cygwinFolder, "_links");
 
 const getNameForKey = (key) => {
     return key.trim().split("/").join("_s_");
@@ -28,14 +30,17 @@ const consolidateLinks = async () => {
     // 1) Move the executables to a 'links' folder
     // 2) Delete all linked references
 
-    if(!fs.existsSync(path.join(cygwinFolder, "_links"))) {
-        fs.mkdirSync(path.join(cygwinFolder, "_links"));
+    const linksFolderExists = await existsAsync(linksFolder);
+    if (!linksFolderExists) {
+        await mkdirAsync(linksFolder);
     }
 
     const deleteFile = async (file) => {
         const fileToDelete = path.join(cygwinFolder, path.normalize(file.trim()));
         console.log(`Deleting: ${fileToDelete}`);
-        if (!fs.existsSync(fileToDelete)) {
+
+        const fileExists = await existsAsync(fileToDelete);
+        if (!fileExists) {
             console.warn("- Not present: " + fileToDelete);
         } else {
             await unlinkAsync(fileToDelete);
@@ -70,12 +75,12 @@ const consolidateLinks = async () => {
 }
 
 const ensureFolder = async (p) => {
-    if (fs.existsSync(p)) {
+    let exists = await existsAsync(p);
+    if (exists) {
         return;
     }
 
     await ensureFolder(path.dirname(p));
-
     await mkdirAsync(p);
 };
 
@@ -97,7 +102,8 @@ const restoreLinks = async () => {
             const dst = path.join(cygwinFolder, file.trim());
             await ensureFolder(path.dirname(dst));
 
-            if (fs.existsSync(dst)) {
+           const exists = await existsAsync(dst);
+            if (exists) {
                 console.warn("Warning - file already exists: " + dst);
             } else {
                 await linkAsync(src, dst);
@@ -123,12 +129,14 @@ const restoreLinks = async () => {
             orig = path.join(cygwinFolder, orig);
         }
 
-        if (!fs.existsSync(orig)) {
+        const origExists = await existsAsync(orig);
+        if (!origExists) {
             console.warn("Cannot find original path: " + orig + ", skipping symlink: " + link);
             return;
         }
 
-        if (fs.existsSync(link)) {
+        const linkExists = await existsAsync(link);
+        if (linkExists) {
             console.warn("Removing existing file at: " + link);
             await unlinkAsync(link);
         }
