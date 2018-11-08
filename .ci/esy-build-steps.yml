@@ -13,10 +13,10 @@ steps:
     displayName: "npm run test: before packing"
   - script: npm run package-cygwin
   - task: PublishBuildArtifacts@1
-     displayName: 'Release Package'
-     inputs:
-         PathtoPublish: '.'
-         ArtifactName: npm-package
+    displayName: 'Release Package'
+    inputs:
+        PathtoPublish: '.'
+        ArtifactName: npm-package
   - script: node postinstall.js
   - script: npm run test
     displayName: "npm run test: after unpack"
