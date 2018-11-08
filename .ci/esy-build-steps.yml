@@ -18,6 +18,15 @@ steps:
         PathtoPublish: '.'
         ArtifactName: npm-package
   - script: node postinstall.js
+    displayName: "node postinstall.js (iteration 1)"
   - script: npm run test
-    displayName: "npm run test: after unpack"
+    displayName: "npm run test: after unpack (iteration 1)"
+  - script: node postinstall.js
+    displayName: "node postinstall.js (iteration 2)"
+  - script: npm run test
+    displayName: "npm run test: after unpack (iteration 2)"
+  - script: node postinstall.js
+    displayName: "node postinstall.js (iteration 3)"
+  - script: npm run test
+    displayName: "npm run test: after unpack (iteration 3)"
 
