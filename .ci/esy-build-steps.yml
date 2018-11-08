@@ -1,0 +1,33 @@
+# Cross-platform set of build steps for building esy projects
+
+steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.9'
+  - script: npm install -g esy@0.3.4
+  - script: npm install
+  - script: npm run build-cygwin
+  - script: cd re && esy install
+  - script: cd re && esy build
+  - script: cd re && esy b dune runtest
+  - script: npm run test
+    displayName: "npm run test: before packing"
+  - script: npm run package-cygwin
+  - task: PublishBuildArtifacts@1
+    displayName: 'Release Package'
+    inputs:
+        PathtoPublish: '.'
+        ArtifactName: npm-package
+  - script: node postinstall.js
+    displayName: "node postinstall.js (iteration 1)"
+  - script: npm run test
+    displayName: "npm run test: after unpack (iteration 1)"
+  - script: node postinstall.js
+    displayName: "node postinstall.js (iteration 2)"
+  - script: npm run test
+    displayName: "npm run test: after unpack (iteration 2)"
+  - script: node postinstall.js
+    displayName: "node postinstall.js (iteration 3)"
+  - script: npm run test
+    displayName: "npm run test: after unpack (iteration 3)"
+
