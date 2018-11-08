@@ -5,6 +5,7 @@ steps:
     inputs:
       versionSpec: '8.9'
   - script: npm install -g esy@0.3.4
+  - script: npm install
   - script: npm run build-cygwin
   - script: cd re && esy install
   - script: cd re && esy build
