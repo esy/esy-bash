@@ -2,6 +2,14 @@ const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
 
+const promisify = require("util").promisify;
+
+const spawnAsync = promisify(cp.spawn);
+const mkdirAsync = promisify(fs.mkdir);
+const linkAsync = promisify(fs.link);
+const unlinkAsync = promisify(fs.unlink);
+const copyFileAsync = promisify(fs.copyFile);
+
 const {bashExec, toCygwinPath} = require("./../bash-exec");
 
 const cygwinFolder = path.join(__dirname, "..", ".cygwin");
@@ -15,7 +23,7 @@ const readLinks = () => {
     return JSON.parse(linkInfo);
 }
 
-const consolidateLinks = () => {
+const consolidateLinks = async () => {
     // Take the links as input, and:
     // 1) Move the executables to a 'links' folder
     // 2) Delete all linked references
@@ -24,20 +32,20 @@ const consolidateLinks = () => {
         fs.mkdirSync(path.join(cygwinFolder, "_links"));
     }
 
-    const deleteFile = (file) => {
+    const deleteFile = async (file) => {
         const fileToDelete = path.join(cygwinFolder, path.normalize(file.trim()));
         console.log(`Deleting: ${fileToDelete}`);
         if (!fs.existsSync(fileToDelete)) {
             console.warn("- Not present: " + fileToDelete);
         } else {
-            fs.unlinkSync(fileToDelete);
+            await unlinkAsync(fileToDelete);
         }
     }
 
     const allLinks = readLinks();
     const links = allLinks.hardlinks;
     // Consolidate hard links
-    Object.keys(links).forEach((key) => {
+    let outerPromises = Object.keys(links).map(async (key) => {
         const l = links[key];
 
         const src = path.join(cygwinFolder, path.normalize(key.trim()));
@@ -46,29 +54,32 @@ const consolidateLinks = () => {
         console.log("Dest folder: " + dst);
 
         try {
-            fs.copyFileSync(src, dst);
+            await copyFileAsync(src, dst);
         } catch (ex) {
             console.error(ex);
             exit(1);
         }
 
-        l.forEach((file) => {
-            deleteFile(file);
+        let promises = l.map(async (file) => {
+            await deleteFile(file);
         })
+
+        await Promise.all(promises);
     });
+    await Promise.all(outerPromises);
 }
 
-const ensureFolder = (p) => {
+const ensureFolder = async (p) => {
     if (fs.existsSync(p)) {
         return;
     }
 
-    ensureFolder(path.dirname(p));
+    await ensureFolder(path.dirname(p));
 
-    fs.mkdirSync(p);
+    await mkdirAsync(p);
 };
 
-const restoreLinks = () => {
+const restoreLinks = async () => {
     // Take links as input, and:
     // Create hardlinks from the '_links' folder to all the relevant binaries
 
@@ -77,27 +88,29 @@ const restoreLinks = () => {
     // Hydrate hard links
     console.log("Hydrating hardlinks...");
     const links = allLinks.hardlinks;
-    Object.keys(links).forEach((key) => {
+    let outerPromises = Object.keys(links).map(async (key) => {
         const l = links[key];
 
         const src = path.join(cygwinFolder, "_links", getNameForKey(key));
 
-        l.forEach((file) => {
+       let promises = l.map(async (file) => {
             const dst = path.join(cygwinFolder, file.trim());
-            ensureFolder(path.dirname(dst));
+            await ensureFolder(path.dirname(dst));
 
             if (fs.existsSync(dst)) {
                 console.warn("Warning - file already exists: " + dst);
             } else {
-                fs.linkSync(src, dst);
+                await linkAsync(src, dst);
             }
         })
+        await Promise.all(promises);
     });
+    await Promise.all(outerPromises);
 
     // Hydrate symlinks
     console.log("Hydrating symlinks...");
     const symlinks = allLinks.symlinks;
-    Object.keys(symlinks).forEach((key) => {
+    outerPromises = Object.keys(symlinks).map(async (key) => {
         const link = path.join(cygwinFolder, key);
 
         let orig = symlinks[key];
@@ -117,15 +130,16 @@ const restoreLinks = () => {
 
         if (fs.existsSync(link)) {
             console.warn("Removing existing file at: " + link);
-            fs.unlinkSync(link);
+            await unlinkAsync(link);
         }
 
         console.log(`Linking ${link} to ${orig}`)
         const cygLink = toCygwinPath(link);
         const cygOrig = toCygwinPath(orig);
-        cp.spawnSync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
+        await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
+    await Promise.all(outerPromises);
     console.log("Links successfully restored.");
 }
 
