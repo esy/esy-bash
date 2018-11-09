@@ -31,6 +31,7 @@ const spawnAsync = (command, args, options) => {
 
 
 const toCygwinPathAsync = async (p) => {
+    p = p.split("\\").join("/")
     let ret = await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `cygpath ${p}`]);
     return ret.trim();
 }
@@ -166,6 +167,7 @@ const restoreLinks = async () => {
         console.log(`Linking ${link} to ${orig}`)
         const cygLink = await toCygwinPathAsync(link);
         const cygOrig = await toCygwinPathAsync(orig);
+        console.log(`Cygwin path: ${cygLink} to ${cygOrig}`)
         await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
