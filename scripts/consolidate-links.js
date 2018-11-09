@@ -32,10 +32,11 @@ const spawnAsync = (command, args, options) => {
 
 const toCygwinPathAsync = async (p) => {
     p = p.split("\\").join("/")
-    let ret = await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `cygpath ${p}`]);
+    let ret = await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `cygpath ${p}`]);
     return ret.trim();
 }
 
+const rootFolder = path.join(__dirname, "..");
 const cygwinFolder = path.join(__dirname, "..", ".cygwin");
 const linksFolder = path.join(cygwinFolder, "_links");
 
@@ -111,11 +112,15 @@ const checkUserFolder = async (p) => {
     const esyFolder = path.join(cygwinFolder, "usr", "esy");
     const bashRc = path.join(esyFolder, ".bash_profile");
 
+    try {
     const folderExists = await existsAsync(esyFolder);
     const bashRcExists = await existsAsync(bashRc);
 
     console.log("/usr/esy folder exists: " + folderExists.toString());
     console.log("/usr/esy/.bashrc exists: " + bashRcExists.toString());
+    } catch (ex) {
+        console.warn("/usr/esy " + "folder not set up correctly!")
+    }
 };
 
 const restoreLinks = async () => {
@@ -180,7 +185,7 @@ const restoreLinks = async () => {
         const cygLink = await toCygwinPathAsync(link);
         const cygOrig = await toCygwinPathAsync(orig);
         await checkUserFolder();
-        await spawnAsync(path.join(cygwinFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `ln -s ${cygOrig} ${cygLink}`]);
+        await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
     await Promise.all(outerPromises);
