@@ -34,6 +34,8 @@ let remapPathsInEnvironment = envVars =>
                Sys.unix ? ":" : ";",
                ["/usr/bin", "/usr/local/bin", normalizePath(v)],
              );
+        } else if (String.lowercase_ascii(k) == "home") {
+          "HOME=/usr/esy"
         } else {
           k ++ "=" ++ v;
         }
