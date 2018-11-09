@@ -18,6 +18,6 @@ restoreLinks();
 console.log("Complete!");
 
 process.on('unhandledRejection', (err) => {
-    console.log("unhandledRejection", err.message);
+    console.log("unhandledRejection", err);
     process.exit(1);
 })

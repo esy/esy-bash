@@ -5,13 +5,35 @@ const cp = require("child_process");
 const promisify = require("util").promisify;
 
 const existsAsync = promisify(fs.exists);
-const spawnAsync = promisify(cp.spawn);
 const mkdirAsync = promisify(fs.mkdir);
 const linkAsync = promisify(fs.link);
 const unlinkAsync = promisify(fs.unlink);
 const copyFileAsync = promisify(fs.copyFile);
 
-const {bashExec, toCygwinPath} = require("./../bash-exec");
+const spawnAsync = (command, args, options) => {
+    return new Promise((resolve, reject) => {
+        let proc = cp.spawn(command, args, options);
+
+        let data = "";
+        proc.stdout.on("data", (d) => {
+            data += d;
+        })
+
+        proc.on("close", (exitCode) => {
+            if (exitCode === 0) {
+                resolve(data);
+            } else {
+                reject();
+            }
+        });
+    });
+};
+
+
+const toCygwinPathAsync = async (p) => {
+    let ret = await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `cygpath ${p}`]);
+    return ret.trim();
+}
 
 const cygwinFolder = path.join(__dirname, "..", ".cygwin");
 const linksFolder = path.join(cygwinFolder, "_links");
@@ -142,8 +164,8 @@ const restoreLinks = async () => {
         }
 
         console.log(`Linking ${link} to ${orig}`)
-        const cygLink = toCygwinPath(link);
-        const cygOrig = toCygwinPath(orig);
+        const cygLink = await toCygwinPathAsync(link);
+        const cygOrig = await toCygwinPathAsync(orig);
         await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
