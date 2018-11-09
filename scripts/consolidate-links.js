@@ -180,7 +180,7 @@ const restoreLinks = async () => {
         const cygLink = await toCygwinPathAsync(link);
         const cygOrig = await toCygwinPathAsync(orig);
         await checkUserFolder();
-        await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
+        await spawnAsync(path.join(cygwinFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
     await Promise.all(outerPromises);

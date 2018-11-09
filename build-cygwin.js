@@ -83,15 +83,14 @@ const install = async () => {
     try {
         fs.appendFileSync(
             path.join(__dirname, ".cygwin", "etc", "nsswitch.conf"),
-            "db_home: /usr/esy"
+            "\ndb_home: /usr/esy\n"
         );
     } catch(e) {
         console.error("Something went wrong while updating nsswitch.conf");
     }
 
     // Run a command to test it out & create initial script files
-    cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash.exe"), ["-c", "echo hi"]);
-
+    cp.spawnSync(path.join(__dirname, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", "cd ~ && pwd"]);
 }
 
 if (os.platform() === "win32") {
