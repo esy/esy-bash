@@ -8,6 +8,10 @@ steps:
   - script: npm install
   - script: npm run build-cygwin
   - script: cd re && esy install
+    continueOnError: true
+  - script: cd re && esy install
+    continueOnError: true
+  - script: cd re && esy install
   - script: cd re && esy build
   - script: cd re && esy b dune runtest
   - script: npm run test
