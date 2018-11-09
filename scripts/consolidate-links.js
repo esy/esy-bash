@@ -184,7 +184,6 @@ const restoreLinks = async () => {
         console.log(`Linking ${link} to ${orig}`)
         const cygLink = await toCygwinPathAsync(link);
         const cygOrig = await toCygwinPathAsync(orig);
-        await checkUserFolder();
         await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
