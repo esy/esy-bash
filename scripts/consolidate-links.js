@@ -107,11 +107,24 @@ const ensureFolder = async (p) => {
     await mkdirAsync(p);
 };
 
+const checkUserFolder = async (p) => {
+    const esyFolder = path.join(cygwinFolder, "usr", "esy");
+    const bashRc = path.join(esyFolder, ".bash_profile");
+
+    const folderExists = await existsAsync(esyFolder);
+    const bashRcExists = await existsAsync(bashRc);
+
+    console.log("/usr/esy folder exists: " + folderExists.toString());
+    console.log("/usr/esy/.bashrc exists: " + bashRcExists.toString());
+};
+
 const restoreLinks = async () => {
     // Take links as input, and:
     // Create hardlinks from the '_links' folder to all the relevant binaries
 
     const allLinks = readLinks();
+
+    await checkUserFolder();
 
     // Hydrate hard links
     console.log("Hydrating hardlinks...");
@@ -160,19 +173,18 @@ const restoreLinks = async () => {
 
         const linkExists = await existsAsync(link);
         if (linkExists) {
-            console.warn("Removing existing file at: " + link);
             await unlinkAsync(link);
         }
 
         console.log(`Linking ${link} to ${orig}`)
         const cygLink = await toCygwinPathAsync(link);
         const cygOrig = await toCygwinPathAsync(orig);
-        console.log(`Cygwin path: ${cygLink} to ${cygOrig}`)
+        await checkUserFolder();
         await spawnAsync(path.join(cygwinFolder, "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`]);
     });
 
     await Promise.all(outerPromises);
-    console.log("Links successfully restored.");
+    console.log("Links restored.");
 }
 
 module.exports = {
