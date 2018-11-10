@@ -10,20 +10,36 @@ const linkAsync = promisify(fs.link);
 const unlinkAsync = promisify(fs.unlink);
 const copyFileAsync = promisify(fs.copyFile);
 
+const debugLog = (log) => {
+    const isDebug = process.env["ESY_BASH_DEBUG"];
+
+    if (isDebug) {
+        console.log("[DEBUG] " + log);
+    }
+};
+
 const spawnAsync = (command, args, options) => {
     return new Promise((resolve, reject) => {
+        debugLog(`Running command: ${command} with args ${JSON.stringify(args)}`)
         let proc = cp.spawn(command, args, options);
 
         let data = "";
+        let err = "";
         proc.stdout.on("data", (d) => {
             data += d;
         })
 
+        proc.stderr.on("data", (e) => {
+            err += e;
+        });
+
         proc.on("close", (exitCode) => {
             if (exitCode === 0) {
+                debugLog("Command was succesful.");
                 resolve(data);
             } else {
-                reject();
+                debugLog("Command failed with: " + err);
+                reject(err);
             }
         });
     });
@@ -131,6 +147,22 @@ const checkUserFolder = async (p) => {
     }
 };
 
+const createSymlink = async (cygOrig, cygLink) => {
+    // We'll use the real bash.exe instead of `EsyBash.exe` for this specific operation - restoring symlinks
+    // These cymlinks were specifically 'cygwin-style' symlinks, and since we pass a `CYGWIN` environment
+    // variable that overrides this in `EsyBash.exe`, we won't get quite the same behavior.
+    // 
+    // This is important because it allows us to setup these symlinks w/o needing an administrator environment!
+    await spawnAsync(path.join(rootFolder, ".cygwin", "bin", "bash.exe"), ["-lc", `ln -s ${cygOrig} ${cygLink}`], {
+        env: {
+            // We also need to override 'HOME', otherwise
+            // this might be picked up from the environment.
+            // This is also overridden in EsyBash.exe.
+            HOME: ""
+        }
+    });
+}
+
 const restoreLinks = async () => {
     // Take links as input, and:
     // Create hardlinks from the '_links' folder to all the relevant binaries
@@ -153,7 +185,7 @@ const restoreLinks = async () => {
 
            const exists = await existsAsync(dst);
             if (exists) {
-                console.warn("Warning - file already exists: " + dst);
+                debugLog("Warning - file already exists: " + dst);
             } else {
                 await linkAsync(src, dst);
             }
@@ -180,7 +212,7 @@ const restoreLinks = async () => {
 
         const origExists = await existsAsync(orig);
         if (!origExists) {
-            console.warn("Cannot find original path: " + orig + ", skipping symlink: " + link);
+            debugLog("Cannot find original path: " + orig + ", skipping symlink: " + link);
             return;
         }
 
@@ -189,10 +221,11 @@ const restoreLinks = async () => {
             await unlinkAsync(link);
         }
 
-        console.log(`Linking ${link} to ${orig}`)
+        debugLog(`Linking ${link} to ${orig}`)
         const cygLink = await toCygwinPathAsync(link);
         const cygOrig = await toCygwinPathAsync(orig);
-        await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `ln -s ${cygOrig} ${cygLink}`]);
+        await createSymlink(cygOrig, cygLink);
+        debugLog(`Successfully linked ${link} to ${orig}`)
     });
 
     await Promise.all(outerPromises);
