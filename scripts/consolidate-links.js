@@ -112,7 +112,8 @@ const ensureFolder = async (p) => {
     if (fs.existsSync(p)) {
         return;
     }
-    await mkdirAsync(p);
+    console.log("creating directory: " + p);
+    fs.mkdirSync(p);
 };
 
 const checkUserFolder = async (p) => {
