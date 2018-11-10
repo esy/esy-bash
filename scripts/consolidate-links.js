@@ -109,7 +109,7 @@ const ensureFolder = async (p) => {
     // There is a race condition here - double-check
     // that the folder hasn't actually been created
     // before creating it.
-    if(fs.existsSync(p)) {
+    if (fs.existsSync(p)) {
         return;
     }
     await mkdirAsync(p);
