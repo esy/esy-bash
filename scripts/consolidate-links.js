@@ -122,14 +122,14 @@ const ensureFolder = async (p) => {
 
     await ensureFolder(path.dirname(p));
 
-    // There is a race condition here - double-check
-    // that the folder hasn't actually been created
-    // before creating it.
+    // TODO: Don't use exists here.
+    // These are moved to sync now until we fix this codepath - 
+    // otherwise there is a race condition that hits an error.
     if (fs.existsSync(p)) {
         return;
+    } else {
+        fs.mkdirSync(p);
     }
-
-    await mkdirAsync(p);
 };
 
 const checkUserFolder = async (p) => {
