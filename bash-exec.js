@@ -84,7 +84,7 @@ const bashExec = (bashCommand, options) => {
     const bashCommandWithDirectoryPreamble = `
         mount -c /cygdrive -o binary,noacl,posix=0,user
         # environment file: ${options.environmentFile}
-        cd ${normalizePath(cwd)}
+        cd "${normalizePath(cwd)}"
         ${bashCommand}
     `
     const command = normalizeEndlines(bashCommandWithDirectoryPreamble)
@@ -132,7 +132,7 @@ const toCygwinPath = (originalPath) => {
 
     const normalizedPath = normalizePath(originalPath)
 
-    const ret = cp.spawnSync(bashPath, ["-lc", `cygpath ${normalizedPath}`])
+    const ret = cp.spawnSync(bashPath, ["-lc", `cygpath "${normalizedPath}"`])
     let val = ret.stdout.toString("utf8")
     return val ? val.trim() : null
 }
@@ -144,7 +144,7 @@ const cygwinExec = (bashCommandFilePath, opts) => {
 
     const bashArguments = bashCommandFilePath ? "-lc" : "-l"
 
-    return cp.spawn(bashPath, [bashArguments, ". " + bashCommandFilePath], {
+    return cp.spawn(bashPath, [bashArguments, `. "${bashCommandFilePath}"`], {
         stdio: "inherit",
         ...opts,
     })

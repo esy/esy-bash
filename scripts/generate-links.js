@@ -24,7 +24,7 @@ const convertCygwinPathToRelativePath = (p, curr) => {
 };
 
 const getHardLinksForFile = (filePath) => {
-    let output = cp.execSync("fsutil hardlink list " + filePath).toString().trim();
+    let output = cp.execSync("fsutil hardlink list \"" + filePath + "\"").toString().trim();
 
     let lines = output.split(os.EOL).map(p => convertCygwinPathToRelativePath(path.dirname(p), path.basename(p)));
     return lines;
@@ -33,13 +33,13 @@ const getHardLinksForFile = (filePath) => {
 const cygwinPath = path.join(__dirname, "..", ".cygwin");
 const bashCommand = path.join(cygwinPath, "bin", "bash.exe");
 const bashExec = (command) => {
-    let output = cp.execSync(`${bashCommand} -lc "${command}"`);
+    let output = cp.execSync(`${bashCommand} -lc '${command}'`);
     return output.toString().trim();
 };
 
 const cygPath = (p) => {
     p = p.split("\\").join("/")
-    let ret = bashExec(`cygpath -u ${p}`);
+    let ret = bashExec(`cygpath -u "${p}"`);
     return ret;
 };
 
@@ -70,7 +70,7 @@ const isSymlink = (filePath) => {
     console.log("Checking symlink: " + filePath);
     let isSymlink = true;
     try {
-       let ret = bashExec("test -L " + cygPath(filePath));
+       let ret = bashExec(`test -L "${cygPath(filePath)}"`);
        console.log("SYMLINK! " + filePath);
     } catch (ex) {
         isSymlink = false;
@@ -81,7 +81,7 @@ const isSymlink = (filePath) => {
 
 // Helper method to get the symlink contents from a cygwin symlink file
 const extractSymlinkFromPath = (filePath) => {
-    let result = bashExec(`readlink ${cygPath(filePath)}`)
+    let result = bashExec(`readlink "${cygPath(filePath)}"`)
 
     return result.trim();
 };
