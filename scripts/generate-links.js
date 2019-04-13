@@ -24,7 +24,7 @@ const convertCygwinPathToRelativePath = (p, curr) => {
 };
 
 const getHardLinksForFile = (filePath) => {
-    let output = cp.execSync("fsutil hardlink list \"" + filePath + "\"").toString().trim();
+    let output = cp.execSync(`fsutil hardlink list "${filePath}"`).toString().trim();
 
     let lines = output.split(os.EOL).map(p => convertCygwinPathToRelativePath(path.dirname(p), path.basename(p)));
     return lines;
