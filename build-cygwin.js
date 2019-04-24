@@ -33,6 +33,7 @@ const install = async () => {
         "make",
         "patch",
         "unzip",
+        "python"
 
         // Needed for installing the cygwin-build of OCaml
         // May not be needed
