@@ -16,7 +16,7 @@ let invocations = [
 let idx = 0;
 const getTempDirectory = () => {
     idx++;
-    const testDirectoryName = "test-directory-" + "__" + idx.toString() + "__" + new Date().getTime().toString()
+    const testDirectoryName = "test directory " + idx.toString() + "__" + new Date().getTime().toString()
     return path.join(os.tmpdir(), testDirectoryName)
 }
 
