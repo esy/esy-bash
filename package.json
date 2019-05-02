@@ -17,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bryphe/esy-cygwin.git"
+    "url": "git+https://github.com/bryphe/esy-bash.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bryphe/esy-cygwin/issues"
+    "url": "https://github.com/bryphe/esy-bash/issues"
   },
   "homepage": "https://github.com/bryphe/esy-cygwin#readme",
   "dependencies": {
