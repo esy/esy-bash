@@ -16,7 +16,7 @@ let invocations = [
 let idx = 0;
 const getTempDirectory = () => {
     idx++;
-    const testDirectoryName = "test-directory-" + "__" + idx.toString() + "__" + new Date().getTime().toString()
+    const testDirectoryName = "test directory " + idx.toString() + "__" + new Date().getTime().toString()
     return path.join(os.tmpdir(), testDirectoryName)
 }
 
@@ -133,7 +133,7 @@ invocations.forEach((invocation) => {
 
                 fs.writeFileSync(sourceFilePath, "test file", "utf8")
 
-                const output = await esyBashRun(`ln -s ${toCygwinPath(sourceFilePath)} ${toCygwinPath(destFilePath)}`)
+                const output = await esyBashRun(`ln -s "${toCygwinPath(sourceFilePath)}" "${toCygwinPath(destFilePath)}"`)
 
                 expect(output.status).toEqual(0)
                 expect(fs.existsSync(destFilePath)).toBeTruthy()
@@ -159,7 +159,7 @@ invocations.forEach((invocation) => {
                 const destDirectory = getTempDirectory();
                 fs.mkdirSync(destDirectory);
 
-                output = await esyBashRun(`tar -xf test.tgz -C ${toCygwinPath(destDirectory)}`, null, srcDirectory);
+                output = await esyBashRun(`tar -xf test.tgz -C "${toCygwinPath(destDirectory)}"`, null, srcDirectory);
                 console.dir(output);
                 expect(output.status).toEqual(0);
                 expect(fs.existsSync(path.join(destDirectory, "test.txt"))).toBe(true);
