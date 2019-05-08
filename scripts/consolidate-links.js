@@ -48,7 +48,7 @@ const spawnAsync = (command, args, options) => {
 
 const toCygwinPathAsync = async (p) => {
     p = p.split("\\").join("/")
-    let ret = await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `cygpath "${p}"`]);
+    let ret = await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `cygpath '${p}'`]);
     return ret.trim();
 }
 
