@@ -8,6 +8,6 @@ jobs:
 - job: Windows
   timeoutInMinutes: 0
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-latest'
   steps:
   - template: esy-build-steps.yml
