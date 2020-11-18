@@ -93,7 +93,7 @@ let bashExec = (~environmentFile=?, command) => {
 
   let bashCommandWithDirectoryPreamble =
     Printf.sprintf(
-      "mount -c /cygdrive -o binary,noacl,posix=0,user; \ncd %s;\n%s;",
+      "mount -c /cygdrive -o binary,noacl,posix=0,user > /dev/null; \ncd \"%s\";\n%s;",
       normalizePath(Sys.getcwd()),
       command,
     );
