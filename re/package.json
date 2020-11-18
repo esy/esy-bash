@@ -22,7 +22,7 @@
     }
   },
   "scripts": {
-    "test": "dune runtest"
+    "test": "esy b dune runtest"
   },
   "dependencies": {
     "@opam/dune": "*",
