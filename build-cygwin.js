@@ -90,12 +90,15 @@ const install = async () => {
         console.error("Something went wrong while updating nsswitch.conf");
     }
 
+    // UPDATE: Despite documented here, https://cygwin.com/cygwin-ug-net/setup-files.html, it fails locally
+    // > Your home directory should contain three initialization files that control the behavior of bash. They are .profile, .bashrc and .inputrc. The Cygwin base installation creates stub files when you start bash for the first time.
+    // Leaving the spawnSync to check if commands run successfull atleast.
     // Run a command to test it out & create initial script files
     cp.spawnSync(path.join(__dirname, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", "cd ~ && pwd"]);
 
-    console.log("Verifying esy profile set up...");
-    const bashRcContents = fs.readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc")).toString("utf8");
-    console.log("Esy user profile setup!");
+    // console.log("Verifying esy profile set up...");
+    // const bashRcContents = fs.readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc")).toString("utf8");
+    // console.log("Esy user profile setup!");
 }
 
 if (os.platform() === "win32") {
