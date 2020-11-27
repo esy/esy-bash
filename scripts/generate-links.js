@@ -88,8 +88,18 @@ const extractSymlinkFromPath = (filePath) => {
 
 const getAllHardLinks = async (folder, curr) => {
     console.log("-checking: " + folder);
-    const stats = fs.statSync(folder);
 
+    let stats;
+    try {
+      stats = fs.statSync(folder);
+    } catch (e) {
+        if (e.code === 'UNKNOWN') {
+            // These files are not handled by NPM/Yarn on Windows
+            // CI fails with 'file cannot be accessed by system. Example,
+            // File error 'The file cannot be accessed by the system. : 'D:\a\1\s\.cygwin\dev\fd'' when uploading file 'D:\a\1\s\.cygwin\dev\fd'.
+            fs.unlinkSync(folder);
+        }
+    }
     if (stats.isDirectory()) {
        const dirs = fs.readdirSync(folder); 
        dirs.forEach((d) => getAllHardLinks(path.join(folder, d), curr));
