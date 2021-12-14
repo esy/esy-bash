@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Reason workflow with Esy",
   "license": "MIT",
+  "files": [
+    "_build/default/bin/EsyBash.exe"
+  ],
   "esy": {
     "build": "refmterr dune build -p #{self.name}",
     "buildsInSource": "_build",
@@ -19,22 +22,13 @@
     }
   },
   "scripts": {
-    "test": "dune runtest"
+    "test": "esy b dune runtest"
   },
   "dependencies": {
     "@opam/dune": "*",
     "@esy-ocaml/reason": "*",
     "@opam/ppx_inline_test": "*",
     "refmterr": "*",
-    "ocaml": "~4.6.0"
-  },
-  "resolutions": {
-    "@esy-ocaml/esy-installer": "0.0.1",
-    "@opam/re": "1.8.0",
-    "@opam/menhir": "20171013"
-  },
-  "devDependencies": {
-    "@esy-ocaml/merlin": "*",
-    "ocaml": "~4.6.0"
+    "ocaml": "4.10.x"
   }
 }
