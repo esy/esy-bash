@@ -6,6 +6,8 @@ const cp = require("child_process")
 const rimraf = require("rimraf");
 const fs = require("fs-extra");
 
+process.env['npm_config_strict_ssl'] = 'false';
+
 const log = (msg) => console.log(msg)
 
 const install = async () => {
@@ -33,7 +35,8 @@ const install = async () => {
         "make",
         "patch",
         "unzip",
-        "python"
+        "python",
+        "bash"
 
         // Needed for installing the cygwin-build of OCaml
         // May not be needed
