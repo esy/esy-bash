@@ -37,6 +37,7 @@ const install = async () => {
     "unzip",
     "python",
     "bash",
+    "cygwin-devel"
 
     // Needed for installing the cygwin-build of OCaml
     // May not be needed
