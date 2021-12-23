@@ -10,6 +10,8 @@
     "node": ">=8.0"
   },
   "scripts": {
+    "build-exe": "cd re && esy",
+    "test-exe": "cd re && esy test",
     "test": "jest",
     "postinstall": "node postinstall.js"
   },
