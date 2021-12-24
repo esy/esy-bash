@@ -37,7 +37,6 @@
   "homepage": "https://github.com/bryphe/esy-bash#readme",
   "dependencies": {},
   "devDependencies": {
-    "esy": "latest",
     "download": "^7.0.0",
     "fs-extra": "^8.1.0",
     "jest": "^23.1.0",

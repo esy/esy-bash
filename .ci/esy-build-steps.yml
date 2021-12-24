@@ -4,6 +4,7 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '8.9'
+  - script: npm i -g esy
   - script: npm install
   - script: npm run build-exe
   - script: npm run build-cygwin
