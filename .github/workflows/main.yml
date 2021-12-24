@@ -20,5 +20,11 @@ jobs:
         name: Install npm dependencies
       - run: npm run test
         name: Run e2e tests
+      - name: Create npm package
+        run: npm pack
+      - uses: actions/upload-artifact@v2
+        with:
+          name: npm-release
+          path: esy-bash-0.3.20.tgz
         
         
