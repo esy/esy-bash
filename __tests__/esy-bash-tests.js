@@ -132,19 +132,6 @@ invocations.forEach((invocation) => {
       });
     });
 
-    describe("arguments", () => {
-      it("respects arguments passed in", async () => {
-        const result = cp.spawnSync(binPath, [
-          "sh",
-          "-c",
-          "(echo Hello || true)",
-        ]);
-
-        expect(result.status).toEqual(0);
-        expect(result.stdout.indexOf("Hello")).toBeGreaterThanOrEqual(0);
-      });
-    });
-
     describe("symlinks", () => {
       it("create and read from symlink", async () => {
         const tempDirectoryPath = getTempDirectory();
@@ -220,3 +207,17 @@ invocations.forEach((invocation) => {
     });
   });
 });
+
+
+describe("arguments", () => {
+  it("respects arguments passed in", async () => {
+    const result = cp.spawnSync(binPath, [
+      "bash",
+      "-c",
+      "'(echo Hello || true)'",
+    ]);
+    expect(result.status).toEqual(0);
+    expect(result.stdout.indexOf("Hello")).toBeGreaterThanOrEqual(0);
+  });
+});
+
