@@ -25,6 +25,6 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: npm-release
-          path: esy-bash-0.3.20.tgz
+          path: esy-bash-0.3.21-unbundled.dev.7.tgz
         
         
