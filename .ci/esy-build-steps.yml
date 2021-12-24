@@ -12,10 +12,13 @@ steps:
   - script: npm run test
     displayName: "npm run test: before packing"
   - script: npm run package-cygwin
+    displayName: "Package cygwin"
+  - bash: npm pack
+    displayName: "npm pack"
   - task: PublishBuildArtifacts@1
     displayName: 'Release Package'
     inputs:
-        PathtoPublish: '.'
+        PathtoPublish: './esy-bash-0.3.20.tgz'
         ArtifactName: npm-package
   - script: node postinstall.js
     displayName: "node postinstall.js (iteration 1)"
