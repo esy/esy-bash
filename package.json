@@ -32,7 +32,6 @@
     "rimraf": "*"
   },
   "devDependencies": {
-    "esy": "latest",
     "jest": "^23.1.0"
   }
 }
