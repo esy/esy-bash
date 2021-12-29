@@ -70,7 +70,7 @@ invocations.forEach((invocation) => {
             expect(output.status).toBe(1)
         })
 
-        describe("--env: environment file", async () => {
+        describe.skip("--env: environment file", async () => {
             it("loads an environment variable from environment file", async () => {
                 const environmentFilePath = path.join(os.tmpdir(), "env-file")
                 const environment = JSON.stringify({
