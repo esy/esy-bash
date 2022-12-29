@@ -39,7 +39,7 @@
   "devDependencies": {
     "download": "^7.0.0",
     "fs-extra": "^8.1.0",
-    "jest": "^23.1.0",
+    "jest": "^29.3.1",
     "mkdirp-classic": "^0.5.3",
     "rimraf": "^3.0.2"
   }
