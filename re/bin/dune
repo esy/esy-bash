@@ -1,4 +1,0 @@
-(executable
-  (name EsyBash)
-  (public_name EsyBash.exe)
-  (libraries esy-bash.lib))

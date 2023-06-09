@@ -1,15 +1,24 @@
+---
 # Cross-platform set of build steps for building esy projects
 
 steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '18.16.0'
-  - script: npm i -g esy
+  - bash: |
+      NPM_CACHE_DIR=$(npm config get cache)
+      echo "##vso[task.setvariable variable=NPM_CACHE_DIR]$NPM_CACHE_DIR"
+  - task: Cache@2
+    inputs:
+      key: 'npm | "$(Build.SourcesDirectory)/package-lock.json"'
+      restoreKeys: |
+         npm
+      path: $(NPM_CACHE_DIR)
+    displayName: Cache NPM
+
   - script: npm install
-  - script: npm run build-exe
   - script: npm run build-cygwin
     displayName: 'Build cygwin'
-  # - script: npm run test-exe # Skipped because inline tests dont work on Windows without sys/time.h
   - script: npm run test
     displayName: "npm run test: before packing"
   - script: npm run package-cygwin
@@ -19,7 +28,7 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: 'Release Package'
     inputs:
-        PathtoPublish: './esy-bash-0.3.20.tgz'
+        PathtoPublish: './esy-bash-0.3.21.tgz'
         ArtifactName: npm-package
   - script: node postinstall.js
     displayName: "node postinstall.js (iteration 1)"
