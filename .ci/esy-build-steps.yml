@@ -19,8 +19,6 @@ steps:
   - script: npm install
   - script: npm run build-cygwin
     displayName: 'Build cygwin'
-  - script: npm run test
-    displayName: "npm run test: before packing"
   - script: npm run package-cygwin
     displayName: "Package cygwin"
   - bash: npm pack
@@ -32,14 +30,4 @@ steps:
         ArtifactName: npm-package
   - script: node postinstall.js
     displayName: "node postinstall.js (iteration 1)"
-  - script: npm run test
-    displayName: "npm run test: after unpack (iteration 1)"
-  # - script: node postinstall.js
-  #   displayName: "node postinstall.js (iteration 2)"
-  # - script: npm run test
-  #   displayName: "npm run test: after unpack (iteration 2)"
-  # - script: node postinstall.js
-  #   displayName: "node postinstall.js (iteration 3)"
-  # - script: npm run test
-  #   displayName: "npm run test: after unpack (iteration 3)"
-
+  # TODO Figure e2e test

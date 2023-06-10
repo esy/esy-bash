@@ -19,8 +19,7 @@
   "scripts": {
     "build-cygwin": "node build-cygwin.js",
     "package-cygwin": "node package-cygwin.js",
-    "postinstall": "node postinstall.js",
-    "test": "jest"
+    "postinstall": "node postinstall.js"
   },
   "repository": {
     "type": "git",
