@@ -10,7 +10,6 @@
     "node": ">=8.0"
   },
   "files": [
-    "re/_build/default/bin/EsyBash.exe",
     "bash-exec.js",
     "postinstall.js",
     "bin/esy-bash.js",
@@ -19,11 +18,8 @@
   ],
   "scripts": {
     "build-cygwin": "node build-cygwin.js",
-    "build-exe": "cd re && esy",
     "package-cygwin": "node package-cygwin.js",
-    "postinstall": "node postinstall.js",
-    "test": "jest",
-    "test-exe": "cd re && esy test"
+    "postinstall": "node postinstall.js"
   },
   "repository": {
     "type": "git",
