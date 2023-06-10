@@ -89,11 +89,12 @@ const install = async () => {
             path.join(__dirname, ".cygwin", "etc", "nsswitch.conf"),
             "\ndb_home: /usr/esy\n"
         );
+        console.log("Successfully updated nsswitch.conf");
     } catch(e) {
         console.error("Something went wrong while updating nsswitch.conf");
     }
 
-    // Run a command to test it out & create initial script files
+    console.log("Run a command to test it out & create initial script files");
     let { signal, status, error } = cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash"), [
       "-lc",
       "cd ~ && pwd",
@@ -111,9 +112,13 @@ const install = async () => {
       }
     }
 
-    console.log("Verifying esy profile set up...");
-    const bashRcContents = fs.readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc")).toString("utf8");
-    console.log("Esy user profile setup!");
+    try {
+        console.log("Verifying esy profile set up...");
+        const bashRcContents = fs.readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc")).toString("utf8");
+        console.log("Esy user profile setup! Found the following at /usr/esy/.bashrc", bashRcContents);
+    } catch(e) {
+        console.error("Something went wrong while reading /usr/esy/.bashrc", e);
+    }
 }
 
 if (os.platform() === "win32") {
