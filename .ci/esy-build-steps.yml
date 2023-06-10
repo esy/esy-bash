@@ -4,6 +4,7 @@ steps:
   - task: NodeTool@0
     inputs:
       versionSpec: '8.9'
+  - template: ./use-cache-esy.yml
   - script: npm i -g esy
   - script: npm install
   - script: npm run build-exe
