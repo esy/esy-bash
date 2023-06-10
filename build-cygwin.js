@@ -94,10 +94,22 @@ const install = async () => {
     }
 
     // Run a command to test it out & create initial script files
-    cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash"), [
+    let { signal, status, error } = cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash"), [
       "-lc",
       "cd ~ && pwd",
-    ]);
+    ], { stdio: 'inherit' });
+
+    if (status !== 0) {
+      if (status !== null) {
+	console.error("Initial bash command got killed with status", status);
+      }
+      if (signal) {
+	console.error("Initial bash command got killed by signal", signal);
+      }
+      if (error) {
+	console.log("Initial bash command got killed because of the error", error);
+      }
+    }
 
     console.log("Verifying esy profile set up...");
     const bashRcContents = fs.readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc")).toString("utf8");
