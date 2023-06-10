@@ -1,26 +1,43 @@
+---
 # Cross-platform set of build steps for building esy projects
 
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '8.9'
+      versionSpec: '18.16.0'
+  - bash: |
+      NPM_CACHE_DIR=$(npm config get cache)
+      ESY_BASH_VERSION=$(node -e 'console.log(require("./package.json").version)')
+      echo "##vso[task.setvariable variable=NPM_CACHE_DIR]$NPM_CACHE_DIR"
+      echo "##vso[task.setvariable variable=ESY_BASH_VERSION]$ESY_BASH_VERSION"
+    displayName: Compute pipeline variables
+  - task: Cache@2
+    inputs:
+      key: 'npm | "$(Build.SourcesDirectory)/package-lock.json"'
+      restoreKeys: |
+         npm
+      path: $(NPM_CACHE_DIR)
+    displayName: Cache NPM
   - script: npm i -g esy
+    displayName: Installing esy
   - script: npm install
+    displayName: Installing NPM dependencies
   - script: npm run build-exe
+    displayName: Building EsyBash.exe
   - script: npm run build-cygwin
-    displayName: 'Build cygwin'
+    displayName: Download and setup Cygwin
   # - script: npm run test-exe # Skipped because inline tests dont work on Windows without sys/time.h
   - script: npm run test
     displayName: "npm run test: before packing"
   - script: npm run package-cygwin
-    displayName: "Package cygwin"
+    displayName: "Consolidate links and package cygwin"
   - bash: npm pack
-    displayName: "npm pack"
+    displayName: "NPM packing"
   - task: PublishBuildArtifacts@1
     displayName: 'Release Package'
     inputs:
-        PathtoPublish: './esy-bash-0.3.20.tgz'
-        ArtifactName: npm-package
+      PathtoPublish: './esy-bash-$(ESY_BASH_VERSION).tgz'
+      ArtifactName: esy-bash-$(ESY_BASH_VERSION)
   - script: node postinstall.js
     displayName: "node postinstall.js (iteration 1)"
   - script: npm run test
