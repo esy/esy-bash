@@ -94,7 +94,10 @@ const install = async () => {
     }
 
     // Run a command to test it out & create initial script files
-    cp.spawnSync(path.join(__dirname, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", "cd ~ && pwd"]);
+    cp.spawnSync(path.join(__dirname, ".cygwin", "bin", "bash"), [
+      "-lc",
+      "cd ~ && pwd",
+    ]);
 
     console.log("Verifying esy profile set up...");
     const bashRcContents = fs.readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc")).toString("utf8");
