@@ -20,7 +20,6 @@
   "scripts": {
     "build-cygwin": "node build-cygwin.js",
     "build-exe": "cd re && esy",
-    "package-cygwin": "node package-cygwin.js",
     "postinstall": "node postinstall.js",
     "test": "jest",
     "test-exe": "cd re && esy test"

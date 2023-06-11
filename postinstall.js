@@ -6,15 +6,9 @@ if (process.platform !== "win32") {
 const cp = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const { restoreLinks } = require("./scripts/consolidate-links");
 
 const cygwinPath = path.join(__dirname, ".cygwin");
 const cygwinBinPath = path.join(__dirname, ".cygwin", "bin");
-
-if (!fs.existsSync(path.join(__dirname, ".cygwin"))) {
-    console.warn("No cygwin folder found, not restoring links");
-    return 0;
-}
 
 let runPostCommand = (command, args, opts) => {
     opts = opts || {};
@@ -28,9 +22,7 @@ let runPostCommand = (command, args, opts) => {
     }
 };
 
-let restore = async () => {
-    console.log("Restoring hardlinks...");
-    await restoreLinks();
+let main = async () => {
 
     // Without rebasing, we'll hit errors like:
     // [main] make 10588 child_info_fork::abort: <some path>cygwin\bin\cygiconv-2.dll: Loaded to different address: parent(0x3FF530000) != child(0xDF0000)
@@ -49,7 +41,7 @@ let restore = async () => {
     console.log("Complete!");
 };
 
-restore();
+main();
 
 process.on('unhandledRejection', (err) => {
     console.log("unhandledRejection", err);
