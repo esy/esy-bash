@@ -11,7 +11,7 @@ const unlinkAsync = promisify(fs.unlink);
 const copyFileAsync = promisify(fs.copyFile);
 
 const debugLog = (log) => {
-    const isDebug = process.env["ESY_BASH_DEBUG"];
+    const isDebug = true; // process.env["ESY_BASH_DEBUG"];
 
     if (isDebug) {
         console.log("[DEBUG] " + log);
