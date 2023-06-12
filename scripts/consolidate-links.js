@@ -177,7 +177,8 @@ const createSymlink = async (cygOrig, cygLink) => {
     // variable that overrides this in `EsyBash.exe`, we won't get quite the same behavior.
     // 
     // This is important because it allows us to setup these symlinks w/o needing an administrator environment!
-    await spawnAsync(path.join(rootFolder, ".cygwin", "bin", "bash.exe"), ["-lc", `ln -s "${cygOrig}" "${cygLink}"`], {
+    let cygLinkParentDir = path.dirname(cygLink);
+    await spawnAsync(path.join(rootFolder, ".cygwin", "bin", "bash.exe"), ["-lc", `chmod u+rwx ${cygLinkParentDir}; ln -s "${cygOrig}" "${cygLink}"`], {
         env: {
             // We also need to override 'HOME', otherwise
             // this might be picked up from the environment.
