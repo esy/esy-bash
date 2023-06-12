@@ -10,19 +10,8 @@ steps:
   - template: ./use-cache-npm.yml
   - script: npm i -g esy
     displayName: Installing esy
-  - script: npm install
-    displayName: Installing NPM dependencies
-  - script: npm run build-exe
-    displayName: Building EsyBash.exe
-  - script: npm run build-cygwin
-    displayName: Download and setup Cygwin
-  # - script: npm run test-exe # Skipped because inline tests dont work on Windows without sys/time.h
-  - script: npm run test
-    displayName: "npm run test: before packing"
-  - script: npm run package-cygwin
-    displayName: "Consolidate links and package cygwin"
-  - bash: npm pack
-    displayName: "NPM packing"
+  - powershell: ./package.ps1
+    displayName: Download and package Cygwin
   - template: use-publish.yml
   - script: node postinstall.js
     displayName: "node postinstall.js (iteration 1)"
