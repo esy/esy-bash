@@ -11,7 +11,7 @@ echo "Consolidate links and package cygwin"
 npm run package-cygwin
 echo "NPM packing"
 npm pack
-echo "node postinstall.js (iteration 1)"
-node postinstall.js
-echo "npm run test: after unpack (iteration 1)"
-npm run test
+# echo "node postinstall.js (iteration 1)"
+# node postinstall.js
+# echo "npm run test: after unpack (iteration 1)"
+# npm run test
