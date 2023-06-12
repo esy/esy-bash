@@ -6,7 +6,6 @@ steps:
     inputs:
       versionSpec: '18.16.0'
   - template: ./use-cache-esy.yml
-  - template: ./use-cache-esy.yml
   - template: ./use-cache-npm.yml
   - script: npm i -g esy
     displayName: Installing esy
