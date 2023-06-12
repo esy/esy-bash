@@ -1,0 +1,43 @@
+name: Continuous Integration
+
+on:
+  - push
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Get npm cache directory path
+        id: npm-cache-dir-path
+        run: echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3.3.1
+        with:
+          path: ${{ steps.npm-cache-dir-path.outputs.dir }}
+          key: npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            npm-
+
+      - name: Try to restore esy cache
+        uses: actions/cache@v3.3.1
+        with:
+          path: ~/.esy # This can grow quickly. Must be following by rm -rf ~/.esy/3/b
+          key: source-${{ hashFiles('**/index.json') }}
+
+      - name: Install esy
+        run: npm install -g esy@beta
+
+      - name: Download and setup Cygwin
+        run: ./package.ps1
+        shell: pwsh
+
+
