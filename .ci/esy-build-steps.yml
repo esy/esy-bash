@@ -1,27 +1,29 @@
+---
 # Cross-platform set of build steps for building esy projects
 
 steps:
   - task: NodeTool@0
     inputs:
-      versionSpec: '8.9'
+      versionSpec: '18.16.0'
   - template: ./use-cache-esy.yml
+  - template: ./use-cache-esy.yml
+  - template: ./use-cache-npm.yml
   - script: npm i -g esy
+    displayName: Installing esy
   - script: npm install
+    displayName: Installing NPM dependencies
   - script: npm run build-exe
+    displayName: Building EsyBash.exe
   - script: npm run build-cygwin
-    displayName: 'Build cygwin'
+    displayName: Download and setup Cygwin
   # - script: npm run test-exe # Skipped because inline tests dont work on Windows without sys/time.h
   - script: npm run test
     displayName: "npm run test: before packing"
   - script: npm run package-cygwin
-    displayName: "Package cygwin"
+    displayName: "Consolidate links and package cygwin"
   - bash: npm pack
-    displayName: "npm pack"
-  - task: PublishBuildArtifacts@1
-    displayName: 'Release Package'
-    inputs:
-        PathtoPublish: './esy-bash-0.3.20.tgz'
-        ArtifactName: npm-package
+    displayName: "NPM packing"
+  - template: use-publish.yml
   - script: node postinstall.js
     displayName: "node postinstall.js (iteration 1)"
   - script: npm run test

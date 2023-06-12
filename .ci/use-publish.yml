@@ -1,0 +1,11 @@
+---
+steps:
+  - bash: |
+      ESY_BASH_VERSION=$(node -e 'console.log(require("./package.json").version)')
+      echo "##vso[task.setvariable variable=ESY_BASH_VERSION]$ESY_BASH_VERSION"
+    displayName: Compute pipeline variable - ESY_BASH_VERSION
+  - task: PublishBuildArtifacts@1
+    displayName: 'Release Package'
+    inputs:
+      PathtoPublish: './esy-bash-$(ESY_BASH_VERSION).tgz'
+      ArtifactName: esy-bash-$(ESY_BASH_VERSION)
