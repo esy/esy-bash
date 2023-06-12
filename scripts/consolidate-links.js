@@ -1,3 +1,27 @@
+////////////////////////////////////////////////////////////////////////////
+// Because tar doesn't unpack hardlinks well.			          //
+// 								          //
+// tar: package/.cygwin/bin/dash.exe: Cannot hard link to                 //
+// ‘.cygwin\\bin\\ash.exe’: No such file or directory   	          //
+// tar: package/.cygwin/bin/gawk.exe: Cannot hard link to                 //
+// ‘.cygwin\\bin\\gawk-5.2.2.exe’: No such file or directory   	          //
+// tar: package/.cygwin/bin/git-upload-archive.exe: Cannot hard link to   //
+// ‘.cygwin\\bin\\git-receive-pack.exe’: No such file or directory        //
+// tar: package/.cygwin/bin/git-upload-pack.exe: Cannot hard link to      //
+// ‘.cygwin\\bin\\git-receive-pack.exe’: No such file or directory        //
+// tar: package/.cygwin/bin/git.exe: Cannot hard link to	          //
+// ‘.cygwin\\bin\\git-receive-pack.exe’: No such file or directory        //
+// tar: package/.cygwin/bin/ld.exe: Cannot hard link to		          //
+// ‘.cygwin\\bin\\ld.bfd.exe’: No such file or directory 	          //
+// tar: package/.cygwin/bin/perl5.36.1.exe: Cannot hard link to	          //
+// ‘.cygwin\\bin\\perl.exe’: No such file or directory 		          //
+// 								          //
+// We record the hardlinks and symlinks to in links.json, delete and pack //
+// them. Later, postinstall.js restores them back with the help of	  //
+// links.json 								  //
+// 								          //
+////////////////////////////////////////////////////////////////////////////
+
 const fs = require("fs");
 const path = require("path");
 const cp = require("child_process");
