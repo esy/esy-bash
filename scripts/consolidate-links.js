@@ -70,10 +70,30 @@ const spawnAsync = (command, args, options) => {
 };
 
 
-const toCygwinPathAsync = async (p) => {
+const toCygwinPathAsync = async (p, attempt) => {
+    attemp = attempt || 0;
     p = p.split("\\").join("/")
-    let ret = await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `cygpath '${p}'`]);
-    return ret.trim();
+    try {
+        let ret = await spawnAsync(path.join(rootFolder, "re", "_build", "default", "bin", "EsyBash.exe"), ["bash", "-lc", `cygpath '${p}'`]);
+        attempt = 0;
+        return ret.trim();
+    } catch(e) {
+        if (/Resource temporarily unavailable/.test(e.message)) {
+          console.log("A resource is temporarily unavailable");
+	  console.log("Full error");
+	  console.log(e);
+	  if (attempt && attempt < 5) {
+	    console.log(`Retrying in a second (attempt ${attempt}`);
+	    return toCygwinPathAsync(p, attempt + 1);
+	  } else {
+	    console.log("Too many retries. Giving up");
+	    console.log("Args", p);
+	    throw e;
+	  }
+	} else {
+	  throw e;
+	}
+    }
 }
 
 const rootFolder = path.join(__dirname, "..");

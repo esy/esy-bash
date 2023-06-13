@@ -12,6 +12,7 @@ npm run package-cygwin
 echo "NPM packing"
 npm pack
 echo "node postinstall.js (iteration 1)"
+$env:ESY_BASH_DEBUG = true
 node postinstall.js
 echo "npm run test: after unpack (iteration 1)"
 npm run test

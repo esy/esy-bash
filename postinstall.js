@@ -12,6 +12,13 @@ const cygwinPath = path.join(__dirname, ".cygwin");
 const cygwinBinPath = path.join(__dirname, ".cygwin", "bin");
 
 if (!fs.existsSync(path.join(__dirname, ".cygwin"))) {
+    // This is necessary because on the CI (or during local
+    // development, runnning `npm install` will trigger postinstall
+    // too. We dont want this to fail, esp on CI where it will break
+    // the pipeline unnecessarily. The point of this `npm install`
+    // command was only to setup dependencies needs to work with
+    // esy-bash. A working postinstall at this stage (beginning of
+    // development) isn't necessary.
     console.warn("No cygwin folder found, not restoring links");
     return 0;
 }
