@@ -39,6 +39,7 @@ jobs:
       - name: Set Variable ESY_BASH_TARBALL
         env:
           variable: esy-bash-${{ steps.package-version.outputs.version }}.tgz
+
       - name: Cache npm dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -80,6 +81,7 @@ jobs:
         with:
           files: ${{ ESY_BASH_TARBALL }} 
 
-      - run: npm publish ${{ steps.define-job-variables.outputs.tarball }}
+      - name: Publish to Github NPM registry
+        run: npm publish --registry 'https://npm.pkg.github.com' ${{ steps.define-job-variables.outputs.tarball }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
