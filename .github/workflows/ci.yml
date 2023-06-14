@@ -25,7 +25,7 @@ jobs:
         with:
           script: |
             const path = require('path')
-            const scriptPath = path.resolve('.github/workflows/print-esy-bash-version.js')
+            const scriptPath = path.resolve('.github/workflows/compute-job-variables.js')
             require(scriptPath)(core, path.resolve('./package.json'))
 
       - name: Cache npm dependencies
