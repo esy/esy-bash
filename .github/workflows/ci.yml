@@ -36,6 +36,9 @@ jobs:
             const scriptPath = path.resolve('.github/workflows/compute-job-variables.js')
             require(scriptPath)(path.resolve('./package.json'))
 
+      - name: Set Variable ESY_BASH_TARBALL
+        env:
+          variable: esy-bash-${{ steps.package-version.outputs.version }}.tgz
       - name: Cache npm dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -69,13 +72,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: release
-          path: ${{ steps.define-job-variables.outputs.tarball }} 
+          path: ${{ ESY_BASH_TARBALL }} 
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ steps.define-job-variables.outputs.tarball }} 
+          files: ${{ ESY_BASH_TARBALL }} 
 
       - run: npm publish ${{ steps.define-job-variables.outputs.tarball }}
         env:
