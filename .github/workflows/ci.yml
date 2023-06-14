@@ -26,12 +26,12 @@ jobs:
           script: |
             const path = require('path')
             const scriptPath = path.resolve('.github/workflows/compute-job-variables.js')
-            require(scriptPath)(core, path.resolve('./package.json'))
+            require(scriptPath)(path.resolve('./package.json'))
 
       - name: Cache npm dependencies
         uses: actions/cache@v3.3.1
         with:
-          path: ${{ steps.define-job-variables.output.npm-cache-path }}
+          path: ${{ steps.define-job-variables.outputs.npm-cache-path }}
           key: npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             npm-
@@ -58,14 +58,14 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: release
-          path: ${{ steps.define-job-variables.output.tarball }} 
+          path: ${{ steps.define-job-variables.outputs.tarball }} 
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ steps.define-job-variables.output.tarball }} 
+          files: ${{ steps.define-job-variables.outputs.tarball }} 
 
-      - run: npm publish ${{ steps.define-job-variables.output.tarball }}
+      - run: npm publish ${{ steps.define-job-variables.outputs.tarball }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}

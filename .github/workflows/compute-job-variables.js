@@ -1,7 +1,14 @@
 const childProcess = require("child_process");
-module.exports = exports = (core, packageJsonPath) => {
+const fs = require("fs");
+
+function appendEnvironmentFile(key, value) {
+  let filename = process.env.GITHUB_OUTPUT;
+  fs.appendFileSync(filename, `${key}=${value}\n`);
+}
+
+module.exports = exports = (packageJsonPath) => {
   let version = require(packageJsonPath).version;
-  let name = require(packageJsonPath).version;
+  let name = require(packageJsonPath).name;
   let npmCachePath;
   try {
     npmCachePath = childProcess.execSync("npm config get cache");
@@ -12,10 +19,10 @@ module.exports = exports = (core, packageJsonPath) => {
       npmCachePath = path.join(process.env.HOME, ".npm");
     }
   }
-  core.setOutput("version", version);
-  core.setOutput(
+  appendEnvironmentFile("version", version);
+  appendEnvironmentFile(
     "tarball",
     `${name.replace("@", "").replace("/", "-")}-${version}.tgz`
   );
-  core.setOutput("npm-cache-path", npmCachePath);
+  appendEnvironmentFile("npm-cache-path", npmCachePath);
 };
