@@ -1,5 +1,5 @@
-echo "Installing NPM dependencies"
-npm install
+echo "Installing NPM dependencies (npm ci)"
+npm ci
 echo "Building EsyBash.exe"
 npm run build-exe
 echo "Download and setup Cygwin"
