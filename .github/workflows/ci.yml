@@ -47,6 +47,12 @@ jobs:
       - name: Install esy
         run: npm install -g esy@beta
 
+      - name: Try to restore .cygwin/ cache
+        uses: actions/cache@v3.3.1
+        with:
+          path: .cygwin
+          key: cygwin-20230614001-${{ hashFiles('build-cygwin.js') }} # the number is nothing but date and an arbitrary incrementing number. This number is useful to bust the cache
+
       - name: Download and setup Cygwin
         run: ./package.ps1
         shell: pwsh
