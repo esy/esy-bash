@@ -69,13 +69,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: release
-          path: ${{ steps.define-job-variables.output.tarball }} 
+          path: ${{ steps.define-job-variables.outputs.tarball }} 
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ steps.define-job-variables.output.tarball }} 
+          files: ${{ steps.define-job-variables.outputs.tarball }} 
 
       - name: Publish to Github NPM registry
         run: npm publish --registry 'https://npm.pkg.github.com' ${{ steps.define-job-variables.outputs.tarball }}
