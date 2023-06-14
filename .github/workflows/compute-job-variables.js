@@ -1,5 +1,6 @@
 const childProcess = require("child_process");
 const fs = require("fs");
+const PackageJson = require("./lib/package-json");
 
 function appendEnvironmentFile(key, value) {
   let filename = process.env.GITHUB_OUTPUT;
@@ -7,8 +8,9 @@ function appendEnvironmentFile(key, value) {
 }
 
 module.exports = exports = (packageJsonPath) => {
-  let version = require(packageJsonPath).version;
-  let name = require(packageJsonPath).name;
+  let packageJson = new PackageJson(packageJsonPath);
+  let name = packageJson.name;
+  let version = packageJson.version;
   let npmCachePath;
   try {
     npmCachePath = childProcess.execSync("npm config get cache");

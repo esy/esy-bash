@@ -19,6 +19,14 @@ jobs:
           node-version: 18.x
           registry-url: 'https://npm.pkg.github.com'
 
+      - name: Prepare NPM manifest
+        uses: actions/github-script@v3.0.0
+        with:
+          script: |
+            const path = require('path')
+            const scriptPath = path.resolve('.github/workflows/prepare-manifest.js')
+            require(scriptPath)(path.resolve('./package.json'))
+
       - name: Define job variables
         id: define-job-variables
         uses: actions/github-script@v3.0.0
