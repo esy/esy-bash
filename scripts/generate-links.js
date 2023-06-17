@@ -92,7 +92,7 @@ const getAllHardLinks = async (folder, curr) => {
     let cygwinCompatiblePath = cygPath(folder);
     bashExec(`chmod u+rwx ${cygwinCompatiblePath}`);
 
-    const stats = fs.statSync(folder);
+    const stats = fs.lstatSync(folder);
 
     if (stats.isDirectory()) {
        const dirs = fs.readdirSync(folder); 
