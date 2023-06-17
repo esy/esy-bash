@@ -88,6 +88,10 @@ const extractSymlinkFromPath = (filePath) => {
 
 const getAllHardLinks = async (folder, curr) => {
     console.log("-checking: " + folder);
+
+    let cygwinCompatiblePath = cygPath(folder);
+    bashExec(`chmod u+rwx ${cygwinCompatiblePath}`);
+
     const stats = fs.statSync(folder);
 
     if (stats.isDirectory()) {
