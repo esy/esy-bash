@@ -1,3 +1,4 @@
+const fs = require("fs");
 const PackageJson = require("./lib/package-json");
 
 module.exports = exports = (packageJsonPath) => {
@@ -15,4 +16,5 @@ module.exports = exports = (packageJsonPath) => {
     // tags
   }
   packageJson.write("version", version);
+  packageJson.write("name", "@manasjayanth/esy-bash");
 };
