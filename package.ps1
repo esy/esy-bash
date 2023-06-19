@@ -1,5 +1,5 @@
-echo "Installing NPM dependencies (npm ci)"
-npm ci
+$ErrorActionPreference = "Stop"
+
 echo "Building EsyBash.exe"
 npm run build-exe
 echo "Download and setup Cygwin"

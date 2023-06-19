@@ -88,7 +88,30 @@ const extractSymlinkFromPath = (filePath) => {
 
 const getAllHardLinks = async (folder, curr) => {
     console.log("-checking: " + folder);
-    const stats = fs.statSync(folder);
+
+    let stats;
+    try {
+        stats = fs.lstatSync(folder);
+    } catch (e) {
+	if (e.errno === -4092) {
+	    // EACCES
+	    try {
+		let cygwinCompatiblePath = cygPath(folder);
+		bashExec(`chmod u+rwx ${cygwinCompatiblePath}`);
+		stats = fs.lstatSync(folder);
+	    } catch (e) {
+		console.log("Failed to chmod. Reason", e.message);
+		console.log("Full error", e);
+                console.log("Not going to look for hardlinks of path", folder);
+	        return;
+	    }
+	} else {
+	    console.log("Failed to lstatsync", folder);
+	    console.log("Full error", e);
+            console.log("Not going to look for hardlinks of path", folder);
+	    return;
+	}
+    }
 
     if (stats.isDirectory()) {
        const dirs = fs.readdirSync(folder); 

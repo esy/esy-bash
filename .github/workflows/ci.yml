@@ -7,6 +7,7 @@ jobs:
   build:
     permissions:
       contents: write
+      packages: write
     runs-on: windows-latest
     steps:
       - name: Checkout code
@@ -16,24 +17,29 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          registry-url: 'https://npm.pkg.github.com'
 
-      - name: Get npm cache directory path
-        id: npm-cache-dir-path
-        run: echo "::set-output name=dir::$(npm config get cache)"
-
-      - name: get-npm-version
-        id: package-version
+      - name: Prepare NPM manifest
         uses: actions/github-script@v3.0.0
         with:
           script: |
             const path = require('path')
-            const scriptPath = path.resolve('.github/workflows/print-esy-bash-version.js')
-            require(scriptPath)(core, path.resolve('./package.json'))
+            const scriptPath = path.resolve('.github/workflows/prepare-manifest.js')
+            require(scriptPath)(path.resolve('./package.json'))
+
+      - name: Define job variables
+        id: define-job-variables
+        uses: actions/github-script@v3.0.0
+        with:
+          script: |
+            const path = require('path')
+            const scriptPath = path.resolve('.github/workflows/compute-job-variables.js')
+            require(scriptPath)(path.resolve('./package.json'))
 
       - name: Cache npm dependencies
         uses: actions/cache@v3.3.1
         with:
-          path: ${{ steps.npm-cache-dir-path.outputs.dir }}
+          path: ${{ steps.define-job-variables.outputs.npm-cache-path }}
           key: npm-${{ hashFiles('package-lock.json') }}
           restore-keys: |
             npm-
@@ -47,11 +53,47 @@ jobs:
       - name: Install esy
         run: npm install -g esy@beta
 
-      - name: Try to restore .cygwin/ cache
-        uses: actions/cache@v3.3.1
-        with:
-          path: .cygwin
-          key: cygwin-20230614001-${{ hashFiles('build-cygwin.js') }} # the number is nothing but date and an arbitrary incrementing number. This number is useful to bust the cache
+      - name: Installing NPM dependencies (npm ci)
+        run: npm ci
+
+
+      #####################################################################################################
+      #                                                                                                   #
+      # Caching had to be diabled because we kept hitting symlink issues.                                 #
+      #                                                                                                   #
+      # NPM packing                                                                                       #
+      # npm ERR! code EACCES                                                                              #
+      # npm ERR! syscall lstat                                                                            #
+      # npm ERR! path D:\a\esy-bash\esy-bash\.cygwin\etc\mtab                                             #
+      # npm ERR! errno -4092                                                                              #
+      # npm ERR! Error: EACCES: permission denied, lstat 'D:\a\esy-bash\esy-bash\.cygwin\etc\mtab'        #
+      # npm ERR!  [Error: EACCES: permission denied, lstat 'D:\a\esy-bash\esy-bash\.cygwin\etc\mtab'] {   #
+      # npm ERR!   errno: -4092,                                                                          #
+      # npm ERR!   code: 'EACCES',                                                                        #
+      # npm ERR!   syscall: 'lstat',                                                                      #
+      # npm ERR!   path: 'D:\\a\\esy-bash\\esy-bash\\.cygwin\\etc\\mtab'                                  #
+      # npm ERR! }                                                                                        #
+      #                                                                                                   #
+      #                                                                                                   #
+      # Also,                                                                                             #
+      #                                                                                                   #
+      # D:\a\esy-bash\esy-bash\scripts\generate-links.js:105                                              #
+      #   throw new Error("Failed to run getAllHardlinks()");                                             #
+      #                                                                                                   #
+      # Because, lstat() for certain symlinks would complain 'Permission Denied'. chmod'ing didn't help.  #
+      # Perhaps, this an issue with how zstd, Github Action's compression, restore permissions for cygwin #
+      # files.                                                                                            #
+      #                                                                                                   #
+      # TODO: enable this again                                                                           #
+      # This could perhaps be enabled only for the step where Cygwin downloads the packages               #
+      #                                                                                                   #
+      #####################################################################################################
+
+      # - name: Try to restore .cygwin/ cache
+      #   uses: actions/cache@v3.3.1
+      #   with:
+      #     path: .cygwin
+      #     key: cygwin-20230614001-${{ hashFiles('build-cygwin.js') }} # the number is nothing but date and an arbitrary incrementing number. This number is useful to bust the cache
 
       - name: Download and setup Cygwin
         run: ./package.ps1
@@ -60,11 +102,16 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: release
-          path: esy-bash-${{ steps.package-version.outputs.version}}.tgz
+          path: ${{ steps.define-job-variables.outputs.tarball }} 
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: esy-bash-${{ steps.package-version.outputs.version}}.tgz
+          files: ${{ steps.define-job-variables.outputs.tarball }} 
+
+      - name: Publish to Github NPM registry
+        run: npm publish --registry 'https://npm.pkg.github.com' ${{ steps.define-job-variables.outputs.tarball }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
 
