@@ -56,6 +56,8 @@ jobs:
       - name: Installing NPM dependencies (npm ci)
         run: npm ci
 
+      - name: Installing esy dependencies (npm run build-exe)
+        run: npm run build-exe
 
       #####################################################################################################
       #                                                                                                   #
