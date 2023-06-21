@@ -59,43 +59,12 @@ jobs:
       - name: Installing esy dependencies (npm run build-exe)
         run: npm run build-exe
 
-      #####################################################################################################
-      #                                                                                                   #
-      # Caching had to be diabled because we kept hitting symlink issues.                                 #
-      #                                                                                                   #
-      # NPM packing                                                                                       #
-      # npm ERR! code EACCES                                                                              #
-      # npm ERR! syscall lstat                                                                            #
-      # npm ERR! path D:\a\esy-bash\esy-bash\.cygwin\etc\mtab                                             #
-      # npm ERR! errno -4092                                                                              #
-      # npm ERR! Error: EACCES: permission denied, lstat 'D:\a\esy-bash\esy-bash\.cygwin\etc\mtab'        #
-      # npm ERR!  [Error: EACCES: permission denied, lstat 'D:\a\esy-bash\esy-bash\.cygwin\etc\mtab'] {   #
-      # npm ERR!   errno: -4092,                                                                          #
-      # npm ERR!   code: 'EACCES',                                                                        #
-      # npm ERR!   syscall: 'lstat',                                                                      #
-      # npm ERR!   path: 'D:\\a\\esy-bash\\esy-bash\\.cygwin\\etc\\mtab'                                  #
-      # npm ERR! }                                                                                        #
-      #                                                                                                   #
-      #                                                                                                   #
-      # Also,                                                                                             #
-      #                                                                                                   #
-      # D:\a\esy-bash\esy-bash\scripts\generate-links.js:105                                              #
-      #   throw new Error("Failed to run getAllHardlinks()");                                             #
-      #                                                                                                   #
-      # Because, lstat() for certain symlinks would complain 'Permission Denied'. chmod'ing didn't help.  #
-      # Perhaps, this an issue with how zstd, Github Action's compression, restore permissions for cygwin #
-      # files.                                                                                            #
-      #                                                                                                   #
-      # TODO: enable this again                                                                           #
-      # This could perhaps be enabled only for the step where Cygwin downloads the packages               #
-      #                                                                                                   #
-      #####################################################################################################
-
-      # - name: Try to restore .cygwin/ cache
-      #   uses: actions/cache@v3.3.1
-      #   with:
-      #     path: .cygwin
-      #     key: cygwin-20230614001-${{ hashFiles('build-cygwin.js') }} # the number is nothing but date and an arbitrary incrementing number. This number is useful to bust the cache
+      - name: Try to restore .cygwin/ cache
+        uses: actions/cache@v3.3.1
+        with:
+          path: .cygwin/var/cache/setup
+          # the number is nothing but date and an arbitrary incrementing number. This number is useful to bust the cache
+          key: cygwin-20230621001-${{ hashFiles('lib.js') }}-${{ hashFiles('packages-to-install.js') }}
 
       - name: Download and setup Cygwin
         run: ./package.ps1
