@@ -6,6 +6,10 @@
     "node": ">=8.0"
   },
   "files": [
+    "defaults",
+    "lib.js",
+    "packages-to-install.js",
+    "postinstall.js",
     "re/_build/default/bin/EsyBash.exe",
     "postinstall.js",
     ".cygwin"
