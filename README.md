@@ -1,5 +1,5 @@
 # esy-bash
-[![Build Status](https://bryphe.visualstudio.com/esy-bash/_apis/build/status/bryphe.esy-bash)](https://bryphe.visualstudio.com/esy-bash/_build/latest?definitionId=7)
+[![Github Actions](https://github.com/ManasJayanth/esy-bash/actions/workflows/ci.yml/badge.svg)](https://github.com/ManasJayanth/esy-bash/actions/workflows/ci.yml)
 [![npm version](https://badge.fury.io/js/esy-bash.svg)](https://badge.fury.io/js/esy-bash)
 
 Installation utilities for a bash environment - primed for Reason/OCaml
