@@ -11,9 +11,23 @@ const cygMirror = "http://cygwin.mirror.constant.com";
 const cygwinSetup = "setup-x86_64.exe";
 const cygwinSetupDownloadURL = `https://cygwin.com/${cygwinSetup}`;
 const installationDirectory = path.join(__dirname, ".cygwin");
+const localPackageDirectory = path.join(
+  installationDirectory,
+  "var",
+  "cache",
+  "setup"
+);
+let esyBashExePath = path.join(
+  __dirname,
+  "re",
+  "_build",
+  "default",
+  "bin",
+  "EsyBash.exe"
+);
 
 function log(...args) {
-  console.log(new Date().toString(), ...args);
+  console.log("[esy-bash-setup]", ...args);
 }
 
 async function downloadSetup() {
@@ -33,64 +47,48 @@ async function downloadSetup() {
   return cygSetupPath;
 }
 
-async function downloadPackages() {
+function runCommand(cmd, args) {
+  log(`Running command: ${[cmd, ...args].join(" ")}`);
+  return cp.spawnSync(cmd, args, {
+    stdio: [process.stdin, process.stdout, process.stderr],
+    encoding: "utf-8",
+  });
+}
+
+async function runSetup(args) {
+  // downloadSetup() is, in a manner of speaking, memoised. Downloads only if the not downloaded already
   let cygSetupPath = await downloadSetup();
-  const localPackageDirectory = path.join(
-    installationDirectory,
-    "var",
-    "cache",
-    "setup"
-  );
+  return runCommand(cygSetupPath, args);
+}
 
+async function downloadPackages() {
   log(`Downloading packages...`);
-  cp.spawnSync(
-    cygSetupPath,
-    [
-      "-qWnNdOD",
-      "-R",
-      installationDirectory,
-      "-s",
-      cygMirror,
-      "-l",
-      localPackageDirectory,
-      "-P",
-      packagesToInstall.join(","),
-    ],
-    {
-      stdio: [process.stdin, process.stdout, process.stderr],
-      encoding: "utf-8",
-    }
-  );
-
+  await runSetup([
+    "-qWnNdOD",
+    "-R",
+    installationDirectory,
+    "-s",
+    cygMirror,
+    "-l",
+    localPackageDirectory,
+    "-P",
+    packagesToInstall.join(","),
+  ]);
   log(`Download complete!`);
 }
 
 async function installPackages() {
-  let cygSetupPath = await downloadSetup();
-  const localPackageDirectory = path.join(
-    installationDirectory,
-    "var",
-    "cache",
-    "setup"
-  );
-
   log(`Installation packages...`);
-  cp.spawnSync(
-    cygSetupPath,
-    [
-      "-qWnNdO",
-      "-R",
-      installationDirectory,
-      "-L",
-      localPackageDirectory,
-      "-P",
-      packagesToInstall.join(","),
-    ],
-    {
-      stdio: [process.stdin, process.stdout, process.stderr],
-      encoding: "utf-8",
-    }
-  );
+  await runSetup([
+    "-qWnNdO",
+    "-R",
+    installationDirectory,
+    "-L",
+    "-l",
+    localPackageDirectory,
+    "-P",
+    packagesToInstall.join(","),
+  ]);
 
   log(`Installation complete!`);
 
@@ -119,14 +117,6 @@ async function installPackages() {
 
   // Run a command to test it out & create initial script files
   let esyBashArgs = ["bash", "-lc", "cd ~ && pwd"];
-  let esyBashExePath = path.join(
-    __dirname,
-    "re",
-    "_build",
-    "default",
-    "bin",
-    "EsyBash.exe"
-  );
   let { pid, error, status, stdout, stderr } = cp.spawnSync(
     esyBashExePath,
     esyBashArgs
@@ -148,7 +138,6 @@ async function installPackages() {
     log("stderr", stderr.toString());
     return -1;
   }
-
   log("Verifying esy profile set up...");
   const bashRcContents = fs
     .readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc"))
