@@ -1,9 +1,7 @@
 const os = require("os");
 const path = require("path");
-const mkdirp = require("mkdirp");
 const download = require("download");
 const cp = require("child_process");
-const rimraf = require("rimraf");
 const fs = require("fs-extra");
 const packagesToInstall = require("./packages-to-install");
 
@@ -94,7 +92,7 @@ async function installPackages() {
 
   // Delete the /var/cache folder, since it's large and we don't need the cache at this point
   log("Deleting /var/cache...");
-  rimraf.sync(path.join(__dirname, ".cygwin", "var", "cache"));
+  await fs.remove(path.join(__dirname, ".cygwin", "var", "cache"));
   log("Deletion successful!");
 
   // Copy any overridden configuration scripts to the cygwin folder
