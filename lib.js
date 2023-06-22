@@ -1,30 +1,17 @@
 const os = require("os");
 const path = require("path");
-const mkdirp = require("mkdirp");
 const download = require("download");
 const cp = require("child_process");
 const rimraf = require("rimraf");
 const fs = require("fs-extra");
 const packagesToInstall = require("./packages-to-install");
-
-const cygMirror = "http://cygwin.mirror.constant.com";
-const cygwinSetup = "setup-x86_64.exe";
-const cygwinSetupDownloadURL = `https://cygwin.com/${cygwinSetup}`;
-const installationDirectory = path.join(__dirname, ".cygwin");
-const localPackageDirectory = path.join(
+const {
+  cygMirror,
+  cygwinSetup,
+  cygwinSetupDownloadURL,
   installationDirectory,
-  "var",
-  "cache",
-  "setup"
-);
-let esyBashExePath = path.join(
-  __dirname,
-  "re",
-  "_build",
-  "default",
-  "bin",
-  "EsyBash.exe"
-);
+  esyBashExePath,
+} = require("./paths.js");
 
 function log(...args) {
   console.log("[esy-bash-setup]", ...args);
@@ -61,7 +48,7 @@ async function runSetup(args) {
   return runCommand(cygSetupPath, args);
 }
 
-async function downloadPackages() {
+async function downloadPackages(localPackageDirectory) {
   log(`Downloading packages...`);
   await runSetup([
     "-qWnNdOD",
@@ -77,7 +64,7 @@ async function downloadPackages() {
   log(`Download complete!`);
 }
 
-async function installPackages() {
+async function installPackages(localPackageDirectory) {
   log(`Installation packages...`);
   await runSetup([
     "-qWnNdO",
@@ -91,11 +78,6 @@ async function installPackages() {
   ]);
 
   log(`Installation complete!`);
-
-  // Delete the /var/cache folder, since it's large and we don't need the cache at this point
-  log("Deleting /var/cache...");
-  rimraf.sync(path.join(__dirname, ".cygwin", "var", "cache"));
-  log("Deletion successful!");
 
   // Copy any overridden configuration scripts to the cygwin folder
   log("Copying over defaults...");

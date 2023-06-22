@@ -4,7 +4,7 @@ filter timestamp {"$(Get-Date -Format o): $_"}
 
 echo "Building EsyBash.exe"
 npm run build-exe | timestamp
-echo "Download cygwin packages and store them at .cygwin/var/cache/setup"
+echo "Download cygwin packages"
 npm run download-packages | timestamp
 # npm run test-exe # Skipped because inline tests dont work on Windows without sys/time.h
 echo "NPM packing"
