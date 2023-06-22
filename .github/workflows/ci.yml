@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          registry-url: 'https://npm.pkg.github.com'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Prepare NPM manifest
         uses: actions/github-script@v3.0.0
@@ -78,8 +78,8 @@ jobs:
         with:
           files: ${{ steps.define-job-variables.outputs.tarball }} 
 
-      - name: Publish to Github NPM registry
-        run: npm publish --registry 'https://npm.pkg.github.com' ${{ steps.define-job-variables.outputs.tarball }}
+      - name: Publish to NPM registry
+        run: npm publish --access=public ${{ steps.define-job-variables.outputs.tarball }}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

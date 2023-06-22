@@ -16,5 +16,5 @@ module.exports = exports = (packageJsonPath) => {
     // tags
   }
   packageJson.write("version", version);
-  packageJson.write("name", "@manasjayanth/esy-bash");
+  packageJson.write("name", "@prometheansacrifice/esy-bash");
 };
