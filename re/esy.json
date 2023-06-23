@@ -5,7 +5,7 @@
   "license": "MIT",
   "files": ["_build/default/bin/EsyBash.exe"],
   "esy": {
-    "build": "refmterr dune build -p #{self.name}",
+    "build": "dune build -p #{self.name}",
     "buildsInSource": "_build",
     "NOTE": "Optional release Section. Customizes result of `esy release`",
     "release": {
@@ -19,8 +19,8 @@
   "dependencies": {
     "@opam/dune": "*",
     "@opam/reason": "*",
+    "@opam/yojson": "*",
     "@opam/ppx_inline_test": "*",
-    "refmterr": "*",
     "ocaml": "4.14.x"
   }
 }
