@@ -1,15 +1,32 @@
-$ErrorActionPreference = "Stop"
-
 filter timestamp {"$(Get-Date -Format o): $_"}
 
+function Run {
+    [CmdletBinding()]
+    Param
+    (
+        [parameter(mandatory=$true, position=0)][string]$Cmd,
+        [parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Args
+    )
+
+    & $Cmd $Args | timestamp
+    if (! $?) {
+	exit(-1);
+    }
+}
+
 echo "Building EsyBash.exe"
-npm run build-exe | timestamp
+Run npm run build-exe
+
 echo "Download cygwin packages and store them at .cygwin/var/cache/setup"
-npm run download-packages | timestamp
+Run npm run download-packages
+
 # npm run test-exe # Skipped because inline tests dont work on Windows without sys/time.h
+
 echo "NPM packing"
-npm pack | timestamp
+Run npm pack
+
 echo "node postinstall.js"
-node postinstall.js | timestamp
+Run node postinstall.js
+
 echo "npm run test"
-npm run test | timestamp
+Run npm run test
