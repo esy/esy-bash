@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "download-packages": "node download-cygwin-packages.js",
-    "build-exe": "cd re && esy",
+    "build-exe": "esy -P re/",
     "install-packages": "node install-cygwin-packages.js",
     "postinstall": "node postinstall.js",
     "test": "jest",
