@@ -1,0 +1,2 @@
+# Because package.json will get updated on every test run
+package-lock.json
