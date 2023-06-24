@@ -64,7 +64,9 @@ jobs:
           key: cygwin-20230621001-${{ hashFiles('lib.js') }}-${{ hashFiles('packages-to-install.js') }}
 
       - name: Download and setup Cygwin
-        run: ./package.ps1
+        run: |
+          mkdir test-project
+          ./package.ps1 -TempDir $(Resolve-Path -Path test-project)
         shell: pwsh
 
       - uses: actions/upload-artifact@v3
