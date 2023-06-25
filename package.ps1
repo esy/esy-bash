@@ -26,8 +26,7 @@ function Install-In-Test-Project {
     param([String] $TempDir)
 
     $PackageJson = Get-Content ./package.json -Raw | ConvertFrom-Json
-    $PackageJsonName = $PackageJson.name
-    $PackageNamespace, $PackageName = $PackageJsonName.split("/")
+    $PackageNamespace, $PackageName = $PackageJson.name.split("/")
 
     if (!$PackageName) {
 	$PackageName = $PackageNamespace
