@@ -2,14 +2,14 @@ const cp = require("child_process");
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
+const { ESY_BASH_PACKAGE_NAME } = require("../package-name");
 
 const normalizePath = (str) => {
   return str.split("\\").join("/");
 };
 
 const binPath = path.join(
-  __dirname,
-  "..",
+  path.dirname(require.resolve(`${ESY_BASH_PACKAGE_NAME}/package.json`)),
   "re",
   "_build",
   "default",
