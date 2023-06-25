@@ -4,17 +4,23 @@ $ErrorActionPreference = "Stop"
 
 filter timestamp {"$(Get-Date -Format o): $_"}
 
-function New-TemporaryDirectory {
-    param([String] $TempDir)
-    if (!$TempDir) {
-	$parent = [System.IO.Path]::GetTempPath()
-    } else {
-	$parent = $TempDir
+function Run {
+    [CmdletBinding()]
+    Param
+    (
+        [parameter(mandatory=$true, position=0)][string]$Cmd,
+        [parameter(mandatory=$false, position=1, ValueFromRemainingArguments=$true)]$Args
+    )
+
+    & $Cmd $Args | timestamp
+    if (! $?) {
+	exit(-1);
     }
-    [string] $name = [System.Guid]::NewGuid()
-    New-Item -ItemType Directory -Path (Join-Path $parent $name)
 }
 
+# We have to run this for every test run because
+# tarball name changes for every commit on the CI
+# (Because of the commit hash in the version)
 function Install-In-Test-Project {
 
     param([String] $TempDir)
@@ -35,28 +41,24 @@ function Install-In-Test-Project {
 
     $FullTarballPath = Resolve-Path($TarballName)
     echo "Tarball Path: $FullTarballPath"
-    $TestProjectDir = New-TemporaryDirectory $TempDir
-    echo "Changing directory to ${TestProjectDir}"
-    cd $TestProjectDir
-    $PackageJsonPath = Join-Path $TestProjectDir "package.json"
-    echo "{}" > $PackageJsonPath
-    echo "Will run: npm i ${FullTarballPath}"
+    cd ./test-project
     npm i $FullTarballPath
-    $NodemodulePath = $PackageName
-    if ($PackageNamespace) {
-	$NodemodulePath = Join-Path $PackageNamespace $PackageName
-    }
-    return Join-Path (Join-Path $TestProjectDir "node_modules") $NodemodulePath 
+    cd ..
 }
 
 echo "Building EsyBash.exe"
-npm run build-exe | timestamp
+Run npm run build-exe
+
 echo "Download cygwin packages and store them at .cygwin/var/cache/setup"
-npm run download-packages | timestamp
+Run npm run download-packages
+
 # npm run test-exe # Skipped because inline tests dont work on Windows without sys/time.h
+
 echo "NPM packing"
-npm pack | timestamp
-$TestProjectEsyBashPath = Install-In-Test-Project -TempDir $TempDir
-cd $TestProjectEsyBashPath
+Run npm pack
+Install-In-Test-Project -TempDir $TempDir
+cd "./test-project"
+echo "npm i"
+Run npm i
 echo "npm run test"
-npm run test | timestamp
+Run npm run test
