@@ -1,0 +1,26 @@
+{
+  "name": "esy-bash",
+  "version": "0.1.0",
+  "description": "Reason workflow with Esy",
+  "license": "MIT",
+  "files": ["_build/default/bin/EsyBash.exe"],
+  "esy": {
+    "build": "dune build -p #{self.name}",
+    "buildsInSource": "_build",
+    "NOTE": "Optional release Section. Customizes result of `esy release`",
+    "release": {
+      "releasedBinaries": ["EsyBash.exe"],
+      "deleteFromBinaryRelease": ["*esy_ocaml_*", "*refmterr-*", "ocaml-*"]
+    }
+  },
+  "scripts": {
+    "test": "esy b dune runtest"
+  },
+  "dependencies": {
+    "@opam/dune": "*",
+    "@opam/reason": "*",
+    "@opam/yojson": "*",
+    "@opam/ppx_inline_test": "*",
+    "ocaml": "4.14.x"
+  }
+}

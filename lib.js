@@ -2,7 +2,6 @@ const os = require("os");
 const path = require("path");
 const download = require("download");
 const cp = require("child_process");
-const rimraf = require("rimraf");
 const fs = require("fs-extra");
 const packagesToInstall = require("./packages-to-install");
 const {

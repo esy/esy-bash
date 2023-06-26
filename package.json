@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "download-packages": "node download-cygwin-packages.js",
-    "build-exe": "cd re && esy",
+    "build-exe": "esy -P re/",
     "install-packages": "node install-cygwin-packages.js",
     "postinstall": "node postinstall.js",
     "test": "jest",
@@ -32,12 +32,11 @@
     "url": "https://github.com/bryphe/esy-bash/issues"
   },
   "homepage": "https://github.com/bryphe/esy-bash#readme",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "download": "^7.0.0",
-    "fs-extra": "^8.1.0",
-    "jest": "^23.1.0",
-    "mkdirp-classic": "^0.5.3",
-    "rimraf": "^3.0.2"
+    "fs-extra": "^8.1.0"
+  },
+  "devDependencies": {
+    "jest": "^23.1.0"
   }
 }
