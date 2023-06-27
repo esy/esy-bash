@@ -75,11 +75,12 @@ describe(description, () => {
     expect(output.status).toBe(1);
   });
 
-  describe.skip("--env: environment file", async () => {
+  describe("--env: environment file", async () => {
     it("loads an environment variable from environment file", async () => {
       const environmentFilePath = path.join(os.tmpdir(), "env-file");
       const environment = JSON.stringify({
         SOME_ENVIRONMENT_VARIABLE: "test-variable-value",
+        "": "",
       });
       fs.writeFileSync(environmentFilePath, environment);
 
@@ -88,6 +89,7 @@ describe(description, () => {
         environmentFilePath
       );
 
+      expect(output.stderr.toString()).toBe("");
       expect(output.status).toEqual(0);
       expect(
         output.stdout.indexOf("test-variable-value")
