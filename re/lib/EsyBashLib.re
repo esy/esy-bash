@@ -23,26 +23,45 @@ let normalizePath = str =>
 let normalizeEndlines = str =>
   String.concat("\n", Str.split(Str.regexp("\r\n"), str));
 
-let remapPathsInEnvironment = envVars =>
-  Array.map(
-    envVar =>
-      switch (String.split_on_char('=', envVar)) {
-      | [k, v, ...rest] =>
-        if (String.lowercase_ascii(k) == "path") {
-          "PATH="
-          ++ String.concat(
-               Sys.unix ? ":" : ";",
-               ["/usr/bin", "/usr/local/bin", normalizePath(v)],
-             );
-        } else if (String.lowercase_ascii(k) == "home") {
-          "HOME=/usr/esy"
-        } else {
-          k ++ "=" ++ v;
-        }
-      | _ => raise(InvariantViolation())
-      },
-    envVars,
-  );
+let splitInTwo = (~char, str) => {
+  switch(String.split_on_char(char, str)) {
+  | [] => Error("String.split_on_char returned empty list")
+  | [_] => Error("String.split_on_char returned a single item back")
+  | [a, b, ..._] => Ok((a, b))
+  }
+};
+
+let getPathSeparator = () => {
+  Sys.unix ? ":" : ";"
+};
+
+module Array = {
+  include Array;
+  let filter_map = (f, arr) => {
+    arr
+    |> Array.fold_left((acc, a) => switch(f(a)) {
+      | Some(v) => [v, ...acc]
+      | None => acc
+      }, [])
+    |> Array.of_list
+  };
+};
+  
+let remapPathsInEnvironment = envVars => {
+  let (let*) = Option.bind;
+  let f = envVar => {
+    let* (k, v) = Result.to_option(splitInTwo(~char='=', envVar));
+    switch(String.lowercase_ascii(k)) {
+    | "path" => Some(("PATH",  String.concat(getPathSeparator(), ["/usr/bin", "/usr/local/bin", normalizePath(v)])))
+    | "home" => Some(("HOME", "/usr/esy"))
+    | "" => None
+    | _kLowerCase => Some((k, v))
+    }
+  };
+  envVars
+  |> Array.filter_map(f) // Some env vars could be invalid and need to be filtered out
+  |> Array.map(((k, v)) => Printf.sprintf("%s=%s", k, v))
+};
 
 let collectKeyValuePairs = jsonKeyValuePairs =>
   List.map(
