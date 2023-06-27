@@ -1,0 +1,23 @@
+{
+  "esy": {
+    "buildEnv": {
+      "SOURCETREE": "#{self.root}"
+    }
+  },
+  "dependencies": {
+    "ocaml": "4.14.x",
+    "@opam/reason": "*",
+    "@opam/bos": "*",
+    "@opam/fpath": "*",
+    "@opam/alcotest": "*",
+    "@opam/cmdliner": "*",
+    "@opam/dune": "*"
+  },
+  "devDependencies": {
+    "@opam/ocamlformat": "*",
+    "@opam/ocaml-lsp-server": "*"
+  },
+  "resolutions": {
+    "@opam/ocp-indent": "OCamlPro/ocp-indent:ocp-indent.opam#7c4d434132cebc15a8213c8be9e7323692eb0a2b"
+  }
+}
