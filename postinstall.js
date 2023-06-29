@@ -1,7 +1,7 @@
 const cp = require("child_process");
 const fs = require("fs");
 const path = require("path");
-const { installPackages } = require("./lib");
+const { installPackages, installWindowsDefaultManifest } = require("./lib");
 const { localPackageDirectory } = require("./paths.js");
 
 if (!fs.existsSync(path.join(__dirname, ".cygwin"))) {
@@ -28,7 +28,9 @@ async function main() {
     console.log("No unpack needed");
     return 0;
   } else {
-    return installPackages(localPackageDirectory);
+    await installPackages(localPackageDirectory);
+    await installWindowsDefaultManifest(localPackageDirectory);
+    return 0;
   }
 }
 

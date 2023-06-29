@@ -4,6 +4,8 @@ const download = require("download");
 const cp = require("child_process");
 const fs = require("fs-extra");
 const packagesToInstall = require("./packages-to-install");
+const tar = require("tar");
+const { log } = require("./utils");
 const {
   cygMirror,
   cygwinSetup,
@@ -11,10 +13,7 @@ const {
   installationDirectory,
   esyBashExePath,
 } = require("./paths.js");
-
-function log(...args) {
-  console.log("[esy-bash-setup]", ...args);
-}
+const windowsDefaultManifest = require("./windows-default-manifest");
 
 async function downloadSetup() {
   const downloadFolder = __dirname;
@@ -33,18 +32,41 @@ async function downloadSetup() {
   return cygSetupPath;
 }
 
-function runCommand(cmd, args) {
-  log(`Running command: ${[cmd, ...args].join(" ")}`);
-  return cp.spawnSync(cmd, args, {
+function runCommand(cmd, args, options) {
+  let commandString = [cmd, ...args].join(" ");
+  log(`Running command: ${commandString}`);
+  let { pid, error, status, stdout, stderr } = cp.spawnSync(cmd, args, {
     stdio: [process.stdin, process.stdout, process.stderr],
     encoding: "utf-8",
+    ...options,
   });
+  if (status !== 0 || error) {
+    console.error(`Error occured while running ${commandString}`);
+    if (error) {
+      if (error.errno === -4058) {
+        console.error(`${cmd} doesn't exist`);
+      } else {
+        console.error("error", error.message);
+        console.error(error);
+      }
+    }
+    log("Command", cmd);
+    log("Command args", args);
+    log("PID", pid);
+    log("stdout", stdout && stdout.toString());
+    log("stderr", stderr && stderr.toString());
+    process.exit(-1);
+  }
 }
 
 async function runSetup(args) {
   // downloadSetup() is, in a manner of speaking, memoised. Downloads only if the not downloaded already
   let cygSetupPath = await downloadSetup();
   return runCommand(cygSetupPath, args);
+}
+
+function runEsyBash(args, options) {
+  return runCommand(esyBashExePath, args, options);
 }
 
 async function downloadPackages(localPackageDirectory) {
@@ -98,27 +120,8 @@ async function installPackages(localPackageDirectory) {
 
   // Run a command to test it out & create initial script files
   let esyBashArgs = ["bash", "-lc", "cd ~ && pwd"];
-  let { pid, error, status, stdout, stderr } = cp.spawnSync(
-    esyBashExePath,
-    esyBashArgs
-  );
+  runEsyBash(esyBashArgs);
 
-  if (status !== 0 || error) {
-    console.error("Error occured while running EsyBash.exe");
-    if (error) {
-      if (error.errno === -4058) {
-        console.error(`${esyBashExePath} doesn't exist`);
-      } else {
-        console.error("error", error.message);
-        console.error(error);
-      }
-    }
-    log("EsyBash args", esyBashArgs);
-    log("PID", pid);
-    log("stdout", stdout.toString());
-    log("stderr", stderr.toString());
-    return -1;
-  }
   log("Verifying esy profile set up...");
   const bashRcContents = fs
     .readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc"))
@@ -126,4 +129,37 @@ async function installPackages(localPackageDirectory) {
   log("Esy user profile setup!");
 }
 
-module.exports = { downloadPackages, installPackages };
+async function downloadWindowsDefaultManifest(downloadFolder) {
+  let { tarballName, tarballURL } = windowsDefaultManifest;
+  await download(tarballURL, downloadFolder);
+  let tarballPath = path.join(downloadFolder, tarballName);
+  return tarballPath;
+}
+
+async function installWindowsDefaultManifest(localPackageDirectory) {
+  let { tarballName } = windowsDefaultManifest;
+  let tarballPath = path.join(localPackageDirectory, tarballName);
+  await tar.x({
+    gzip: true,
+    C: localPackageDirectory,
+    file: tarballPath,
+  });
+  let extractedPath = tarballPath.replace(".tar.gz", "");
+  runEsyBash(
+    `./configure --host x86_64-w64-mingw32 --prefix=/usr/x86_64-w64-mingw32/sys-root/mingw`.split(
+      " "
+    ),
+    {
+      cwd: extractedPath,
+    }
+  );
+  runEsyBash(`make`.split(" "), { cwd: extractedPath });
+  runEsyBash(`make install`.split(" "), { cwd: extractedPath });
+}
+
+module.exports = {
+  downloadPackages,
+  installPackages,
+  downloadWindowsDefaultManifest,
+  installWindowsDefaultManifest,
+};
