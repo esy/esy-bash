@@ -8,6 +8,8 @@
   "files": [
     "defaults",
     "paths.js",
+    "utils.js",
+    "windows-default-manifest.js",
     "lib.js",
     "packages-to-install.js",
     "postinstall.js",
@@ -35,7 +37,8 @@
   "homepage": "https://github.com/bryphe/esy-bash#readme",
   "dependencies": {
     "download": "^7.0.0",
-    "fs-extra": "^8.1.0"
+    "fs-extra": "^8.1.0",
+    "tar": "^6.1.15"
   },
   "devDependencies": {
     "jest": "^23.1.0"
