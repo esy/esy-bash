@@ -34,17 +34,39 @@ async function downloadSetup() {
 }
 
 function runCommand(cmd, args) {
-  log(`Running command: ${[cmd, ...args].join(" ")}`);
-  return cp.spawnSync(cmd, args, {
+  let commandString = [cmd, ...args].join(" ");
+  log(`Running command: ${commandString}`);
+  let { pid, error, status, stdout, stderr } = cp.spawnSync(cmd, args, {
     stdio: [process.stdin, process.stdout, process.stderr],
     encoding: "utf-8",
   });
+  if (status !== 0 || error) {
+    console.error(`Error occured while running ${commandString}`);
+    if (error) {
+      if (error.errno === -4058) {
+        console.error(`${cmd} doesn't exist`);
+      } else {
+        console.error("error", error.message);
+        console.error(error);
+      }
+    }
+    log("Command", cmd);
+    log("Command args", args);
+    log("PID", pid);
+    log("stdout", stdout && stdout.toString());
+    log("stderr", stderr && stderr.toString());
+    process.exit(-1);
+  }
 }
 
 async function runSetup(args) {
   // downloadSetup() is, in a manner of speaking, memoised. Downloads only if the not downloaded already
   let cygSetupPath = await downloadSetup();
   return runCommand(cygSetupPath, args);
+}
+
+function runEsyBash(args) {
+  return runCommand(esyBashExePath, args);
 }
 
 async function downloadPackages(localPackageDirectory) {
@@ -98,27 +120,8 @@ async function installPackages(localPackageDirectory) {
 
   // Run a command to test it out & create initial script files
   let esyBashArgs = ["bash", "-lc", "cd ~ && pwd"];
-  let { pid, error, status, stdout, stderr } = cp.spawnSync(
-    esyBashExePath,
-    esyBashArgs
-  );
+  runEsyBash(esyBashArgs);
 
-  if (status !== 0 || error) {
-    console.error("Error occured while running EsyBash.exe");
-    if (error) {
-      if (error.errno === -4058) {
-        console.error(`${esyBashExePath} doesn't exist`);
-      } else {
-        console.error("error", error.message);
-        console.error(error);
-      }
-    }
-    log("EsyBash args", esyBashArgs);
-    log("PID", pid);
-    log("stdout", stdout.toString());
-    log("stderr", stderr.toString());
-    return -1;
-  }
   log("Verifying esy profile set up...");
   const bashRcContents = fs
     .readFileSync(path.join(__dirname, ".cygwin", "usr", "esy", ".bashrc"))
