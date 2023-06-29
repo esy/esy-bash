@@ -56,12 +56,12 @@ jobs:
       - name: Installing NPM dependencies (npm ci)
         run: npm ci
 
-      - name: Try to restore .cygwin/ cache
+      - name: Try to restore Cygwin cache
         uses: actions/cache@v3.3.1
         with:
-          path: .cygwin/var/cache/setup
+          path: .cygwin-cache
           # the number is nothing but date and an arbitrary incrementing number. This number is useful to bust the cache
-          key: cygwin-20230621001-${{ hashFiles('lib.js') }}-${{ hashFiles('packages-to-install.js') }}
+          key: cygwin-20230622001-${{ hashFiles('lib.js') }}-${{ hashFiles('packages-to-install.js') }}
 
       - name: Download and setup Cygwin
         run: ./package.ps1 -TempDir $(Resolve-Path -Path test-project)

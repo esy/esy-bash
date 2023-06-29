@@ -2,6 +2,7 @@ const cp = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const { installPackages } = require("./lib");
+const { localPackageDirectory } = require("./paths.js");
 
 if (!fs.existsSync(path.join(__dirname, ".cygwin"))) {
   // This is necessary because on the CI (or during local
@@ -27,7 +28,7 @@ async function main() {
     console.log("No unpack needed");
     return 0;
   } else {
-    return installPackages();
+    return installPackages(localPackageDirectory);
   }
 }
 
