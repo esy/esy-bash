@@ -5,6 +5,9 @@
   "engines": {
     "node": ">=8.0"
   },
+  "os": [
+    "win32"
+  ],
   "files": [
     "defaults",
     "paths.js",
