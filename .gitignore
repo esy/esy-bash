@@ -51,6 +51,9 @@ typings/
 # Output of 'npm pack'
 *.tgz
 
+# Editor tmp files
+*~
+
 # Yarn Integrity file
 .yarn-integrity
 
@@ -62,3 +65,7 @@ typings/
 
 # Local cygwin installation
 .cygwin/
+setup-x86_64.exe
+
+# esy
+_esy

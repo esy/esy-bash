@@ -1,0 +1,85 @@
+name: Continuous Integration
+
+on:
+  - push
+
+jobs:
+  build:
+    permissions:
+      contents: write
+      packages: write
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Prepare NPM manifest
+        uses: actions/github-script@v3.0.0
+        with:
+          script: |
+            const path = require('path')
+            const scriptPath = path.resolve('.github/workflows/prepare-manifest.js')
+            require(scriptPath)(path.resolve('./package.json'))
+
+      - name: Define job variables
+        id: define-job-variables
+        uses: actions/github-script@v3.0.0
+        with:
+          script: |
+            const path = require('path')
+            const scriptPath = path.resolve('.github/workflows/compute-job-variables.js')
+            require(scriptPath)(path.resolve('./package.json'))
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v3.3.1
+        with:
+          path: ${{ steps.define-job-variables.outputs.npm-cache-path }}
+          key: npm-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            npm-
+
+      - name: Try to restore esy cache
+        uses: actions/cache@v3.3.1
+        with:
+          path: ~/.esy # This can grow quickly. Must be following by rm -rf ~/.esy/3/b
+          key: source-${{ hashFiles('re/**/index.json') }}
+
+      - name: Install esy
+        run: npm install -g esy@beta
+
+      - name: Installing NPM dependencies (npm ci)
+        run: npm ci
+
+      - name: Try to restore Cygwin cache
+        uses: actions/cache@v3.3.1
+        with:
+          path: .cygwin-cache
+          # the number is nothing but date and an arbitrary incrementing number. This number is useful to bust the cache
+          key: cygwin-20230622001-${{ hashFiles('lib.js') }}-${{ hashFiles('packages-to-install.js') }}
+
+      - name: Download and setup Cygwin
+        run: ./package.ps1 -TempDir $(Resolve-Path -Path test-project)
+        shell: pwsh
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: ${{ steps.define-job-variables.outputs.tarball }} 
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ steps.define-job-variables.outputs.tarball }} 
+
+      - name: Publish to NPM registry
+        run: npm publish --access=public ${{ steps.define-job-variables.outputs.tarball }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+

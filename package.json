@@ -2,32 +2,35 @@
   "name": "esy-bash",
   "version": "0.3.20",
   "description": "Cross-platform bash utilities - primed for Reason/OCaml",
-  "main": "index.js",
-  "bin": {
-    "esy-bash": "bin/esy-bash.js"
-  },
   "engines": {
     "node": ">=8.0"
   },
+  "os": [
+    "win32"
+  ],
   "files": [
-    "re/_build/default/bin/EsyBash.exe",
-    "bash-exec.js",
+    "defaults",
+    "paths.js",
+    "utils.js",
+    "windows-default-manifest.js",
+    "lib.js",
+    "packages-to-install.js",
     "postinstall.js",
-    "bin/esy-bash.js",
-    "scripts",
+    "re/_build/default/bin/EsyBash.exe",
+    "postinstall.js",
     ".cygwin"
   ],
   "scripts": {
-    "build-cygwin": "node build-cygwin.js",
-    "build-exe": "cd re && esy",
-    "package-cygwin": "node package-cygwin.js",
+    "download-packages": "node download-cygwin-packages.js",
+    "build-exe": "esy -P re/",
+    "install-packages": "node install-cygwin-packages.js",
     "postinstall": "node postinstall.js",
     "test": "jest",
     "test-exe": "cd re && esy test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bryphe/esy-bash.git"
+    "url": "https://github.com/ManasJayanth/esy-bash.git"
   },
   "author": "",
   "license": "MIT",
@@ -35,12 +38,12 @@
     "url": "https://github.com/bryphe/esy-bash/issues"
   },
   "homepage": "https://github.com/bryphe/esy-bash#readme",
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "download": "^7.0.0",
     "fs-extra": "^8.1.0",
-    "jest": "^23.1.0",
-    "mkdirp-classic": "^0.5.3",
-    "rimraf": "^3.0.2"
+    "tar": "^6.1.15"
+  },
+  "devDependencies": {
+    "jest": "^23.1.0"
   }
 }

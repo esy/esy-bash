@@ -1,0 +1,10 @@
+(library
+ (name EsyBash)
+ (modules EsyBash)
+ (libraries bos fpath unix str yojson))
+
+(test
+ (name EsyBashTests)
+ (modules EsyBashTests)
+ (libraries alcotest EsyBash fpath yojson rresult bos)
+ (action (run %{test} -e -r %{env:cur__root=cur__root-not-found-in-environment})))
