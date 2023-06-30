@@ -52,7 +52,10 @@ let remapPathsInEnvironment = envVars => {
   let f = envVar => {
     let* (k, v) = Result.to_option(splitInTwo(~char='=', envVar));
     switch(String.lowercase_ascii(k)) {
-    | "path" => Some(("PATH",  String.concat(getPathSeparator(), ["/usr/bin", "/usr/local/bin", normalizePath(v)])))
+    | "path" =>
+      Some(("PATH",
+            String.concat(getPathSeparator(),
+                          [normalizePath(v), "/usr/bin", "/usr/local/bin"])))
     | "home" => Some(("HOME", "/usr/esy"))
     | "" => None
     | _kLowerCase => Some((k, v))
