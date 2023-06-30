@@ -22,5 +22,13 @@
     "@opam/yojson": "*",
     "@opam/ppx_inline_test": "*",
     "ocaml": "4.14.x"
+  },
+  "devDependencies": {
+    "@opam/rtop": "*",
+    "@opam/ocamlformat": "*",
+    "@opam/ocaml-lsp-server": "*"
+  },
+  "resolutions": {
+    "@opam/ocp-indent": "OCamlPro/ocp-indent:ocp-indent.opam#7c4d434132cebc15a8213c8be9e7323692eb0a2b"
   }
 }
